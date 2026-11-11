@@ -1640,7 +1640,8 @@
             </div>
           </div>
 
-          <div style="margin-top:16px;display:flex;justify-content:flex-end;gap:10px;">
+          <div style="margin-top:16px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary" id="btnQuickSaveStep1">💾 Lưu Nhanh Phiếu (Đồng bộ Online)</button>
             <button type="button" class="btn btn-teal" id="btnToStep2">Tiếp tục: Chọn gói & xét nghiệm ➔</button>
           </div>
         </div>
@@ -1666,9 +1667,12 @@
 
           <div id="catalogCategoriesContainer"></div>
 
-          <div style="margin-top:16px;display:flex;justify-content:space-between;">
+          <div style="margin-top:16px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
             <button type="button" class="btn btn-outline" id="btnBackStep1">⬅ Quay lại Bước 1</button>
-            <button type="button" class="btn btn-teal" id="btnToStep3Bottom">Tiếp tục: Nhập kết quả ➔</button>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-primary" id="btnQuickSaveStep2">💾 Lưu Phiếu Chờ KQ (Đồng bộ Online)</button>
+              <button type="button" class="btn btn-teal" id="btnToStep3Bottom">Tiếp tục: Nhập kết quả ➔</button>
+            </div>
           </div>
         </div>
 
@@ -2439,33 +2443,29 @@
   <div id="mobileConnectModal" class="mobile-qr-modal-overlay no-print hidden">
     <div class="mobile-qr-modal-card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <div style="font-weight:800;font-size:16px;color:var(--band-color);">📱 MỞ TRÊN ĐIỆN THOẠI & ĐỒNG BỘ MÁY TÍNH</div>
+        <div style="font-weight:800;font-size:15.5px;color:var(--band-color);">🌐 ĐỒNG BỘ ONLINE MỌI NƠI (4G / 5G / INTERNET)</div>
         <button type="button" class="btn btn-danger btn-sm" id="btnCloseMobileModal">✕ Đóng</button>
       </div>
-      <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12.5px;color:#0f766e;">
-        <strong>✅ Đã cài sẵn 100% đồng bộ tự động:</strong> Khi bạn mở phần mềm trên điện thoại và bấm <strong>Lưu phiếu</strong>, dữ liệu sẽ tự động gửi về phần mềm trên máy tính sau <strong>1–2 giây</strong>!
+      <div style="background:#f0fdfa;border:1.5px solid #5eead4;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:12.8px;color:#0f766e;line-height:1.45;">
+        <strong>✅ Dùng Online mọi nơi (Kể cả khi đang ở ngoài, máy tính ở nhà tắt):</strong><br/>
+        Khi bạn đi ra ngoài chỉ cần có mạng 4G/Wi-Fi, mở phần mềm trên điện thoại và nhập bệnh nhân. Dữ liệu được lưu trên <strong>Đám mây Online</strong> — khi bạn về mở máy tính lên là toàn bộ phiếu tự động hiện ra!
       </div>
 
-      <div class="grid-2" style="gap:12px;margin-bottom:12px;">
-        <div style="border:1.5px solid #cbd5e1;border-radius:12px;padding:12px;text-align:center;background:#f8fafc;">
-          <div style="font-weight:800;font-size:12.5px;color:var(--band-color);margin-bottom:4px;">🌐 CÁCH 1: MỞ ONLINE MỌI NƠI (4G / WI-FI)</div>
-          <div style="font-size:11.5px;color:#64748b;margin-bottom:8px;">Quét bằng Camera hoặc Zalo trên điện thoại</div>
-          <div id="qrBoxVercelOnline" style="display:flex;justify-content:center;margin-bottom:8px;"></div>
-          <div style="font-size:11.5px;font-weight:700;color:#0f766e;word-break:break-all;margin-bottom:8px;" id="lblVercelOnlineUrl">https://phongxetnghiemykhoa-baduy.vercel.app/</div>
-          <button type="button" class="btn btn-teal btn-sm" id="btnCopyVercelLink" style="width:100%;">📋 Copy Link Online</button>
+      <div style="border:1.5px solid #cbd5e1;border-radius:12px;padding:14px;text-align:center;background:#f8fafc;margin-bottom:12px;">
+        <div style="font-weight:800;font-size:13.5px;color:var(--band-color);margin-bottom:4px;">📱 QUÉT QR ĐỂ MỞ LINK ONLINE TRÊN ĐIỆN THOẠI (4G / INTERNET MỌI NƠI)</div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:8px;">Mở Camera hoặc Zalo trên điện thoại quét mã này để vào Web Online</div>
+        <div id="qrBoxVercelOnline" style="display:flex;justify-content:center;margin-bottom:8px;"></div>
+        <div style="font-size:12.5px;font-weight:800;color:#0f766e;word-break:break-all;margin-bottom:10px;" id="lblVercelOnlineUrl">https://phongxetnghiemykhoa-baduy.vercel.app/</div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <button type="button" class="btn btn-teal btn-sm" id="btnCopyVercelLink">📋 Copy Link Web Online</button>
+          <button type="button" class="btn btn-blue btn-sm" id="btnSyncNowFromModal">☁️ Đồng Bộ Đám Mây Ngay</button>
         </div>
-
-        <div style="border:1.5px solid #cbd5e1;border-radius:12px;padding:12px;text-align:center;background:#f8fafc;">
-          <div style="font-weight:800;font-size:12.5px;color:var(--band-color);margin-bottom:4px;">⚡ CÁCH 2: MỞ TRỰC TIẾP TỪ MÁY TÍNH (.EXE)</div>
-          <div style="font-size:11.5px;color:#64748b;margin-bottom:8px;">Dùng chung Wi-Fi phòng khám (Không cần Vercel)</div>
-          <div id="qrBoxLanDirect" style="display:flex;justify-content:center;margin-bottom:8px;"></div>
-          <div style="font-size:11.5px;font-weight:700;color:#0284c7;word-break:break-all;margin-bottom:8px;" id="lblLanDirectUrl">Đang kiểm tra IP Wi-Fi máy tính...</div>
-          <button type="button" class="btn btn-blue btn-sm" id="btnSyncNowFromModal" style="width:100%;">☁️ Đồng Bộ Ngay Lập Tức</button>
-        </div>
+        <div id="qrBoxLanDirect" class="hidden"></div>
+        <div id="lblLanDirectUrl" class="hidden"></div>
       </div>
 
-      <div style="font-size:12px;color:#475569;background:#f1f5f9;padding:10px 12px;border-radius:9px;line-height:1.45;">
-        💡 <strong>Mẹo cực nhanh:</strong> Bạn cũng có thể gửi trực tiếp file <code>index.html</code> này qua <strong>Zalo</strong> sang điện thoại rồi bấm mở trên điện thoại — phần mềm vẫn tự động đồng bộ phiếu mới về máy tính qua đám mây!
+      <div style="font-size:12px;color:#334155;background:#fef9c3;border:1px solid #fde047;padding:10px 12px;border-radius:9px;line-height:1.45;">
+        ⚡ <strong>Lưu ý quan trọng:</strong> Nếu bạn chưa chạy file <code>2_DUA_LEN_ONLINE_VERCEL_1_CLICK.bat</code> để cập nhật trang Vercel, bạn có thể <strong>gửi trực tiếp file <code>index.html</code> này qua Zalo sang điện thoại</strong> và mở bằng Chrome/Safari trên điện thoại — đi ra ngoài bằng 4G nhập bệnh nhân vẫn tự động đồng bộ về máy tính 100%!
       </div>
     </div>
   </div>
@@ -4124,15 +4124,7 @@ var QRCode = QRCode;
           window.electronAPI.saveSupplies(state.supplies);
         }
 
-        // Background auto-sync to Vercel endpoint if configured
-        const syncEndpoint = normalizeVercelSyncEndpoint(state.settings.cloudUrl);
-        if (syncEndpoint && syncEndpoint.startsWith('http')) {
-          fetch(syncEndpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: jsonStr
-          }).catch(() => {});
-        }
+        // Local persistence only; Cloud Sync is handled safely via two-way merge engine
       } catch (_) {}
       applyBrandTheme();
       updateSidebarCounts();
@@ -4232,6 +4224,9 @@ var QRCode = QRCode;
 
     /* ================= TAB & STEP NAVIGATION ================= */
     function switchTab(tabName) {
+      if (state.activeTab === 'create' && tabName !== 'create' && $('inpPatientName') && $('inpPatientName').value.trim()) {
+        saveCurrentReportFromForm();
+      }
       if (tabName === 'settings' && (!state.currentUser || state.currentUser.role !== 'admin')) {
         showToast('Tài khoản nhân viên chỉ có quyền tạo phiếu, nhập và in trả kết quả!');
         return;
@@ -4271,6 +4266,9 @@ var QRCode = QRCode;
     });
 
     function switchStep(stepNum) {
+      if ($('inpPatientName') && $('inpPatientName').value.trim()) {
+        saveCurrentReportFromForm();
+      }
       if (stepNum === 4) {
         saveCurrentReportFromForm();
         state.printSubMode = 'result';
@@ -4296,6 +4294,23 @@ var QRCode = QRCode;
     });
 
     $('btnToStep2').addEventListener('click', () => switchStep(2));
+    if ($('btnQuickSaveStep1')) {
+      $('btnQuickSaveStep1').addEventListener('click', () => {
+        if (!$('inpPatientName').value.trim()) {
+          showToast('Vui lòng nhập Họ và tên bệnh nhân trước khi lưu!');
+          $('inpPatientName').focus();
+          return;
+        }
+        const rep = saveCurrentReportFromForm();
+        showToast('☁️ Đã lưu & đồng bộ Online phiếu ' + rep.code + ' (' + rep.patient.name + ')!');
+      });
+    }
+    if ($('btnQuickSaveStep2')) {
+      $('btnQuickSaveStep2').addEventListener('click', () => {
+        const rep = saveCurrentReportFromForm();
+        showToast('☁️ Đã lưu & đồng bộ Online phiếu ' + rep.code + ' (' + (rep.results || []).length + ' XN)!');
+      });
+    }
     $('btnBackStep1').addEventListener('click', () => switchStep(1));
     $('btnToStep3Top').addEventListener('click', () => switchStep(3));
     $('btnToStep3Bottom').addEventListener('click', () => switchStep(3));
@@ -6861,7 +6876,7 @@ ${extraPageRule}
       showToast('Đã tạo tài khoản con: ' + u);
     });
 
-    /* ================= ZERO-CONFIG TRIPLE-ENGINE AUTO CLOUD SYNC (PHONE <-> PC) ================= */
+    /* ================= ZERO-CONFIG TRIPLE-ENGINE AUTO CLOUD SYNC V10 (PHONE <-> PC) ================= */
     const INITIAL_REPORT_CODES = new Set(INITIAL_BACKUP_DATA.reports.map(r => r.code));
     const DELETED_CODES_KEY = 'baduy_lab_deleted_codes_v9';
     let deletedCodesMap = {};
@@ -6876,11 +6891,35 @@ ${extraPageRule}
     function getRelayTopicName() {
       const rawToken = String(state.settings.cloudToken || 'baduy-lab-sync').trim() || 'baduy-lab-sync';
       const clean = rawToken.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 32);
-      return 'pxn_ykhoa_baduy_v9_' + clean;
+      return 'pxn_ykhoa_baduy_v10_' + clean;
     }
 
     function getRelayBaseUrl() {
       return 'https://ntfy.sh/' + getRelayTopicName();
+    }
+
+    /* Universal HTTP helper: uses native Node.js IPC in .exe app (zero CORS/firewall issues) or browser fetch */
+    async function universalCloudFetch(url, options = {}) {
+      const method = options.method || 'GET';
+      const headers = options.headers || {};
+      const body = options.body || null;
+      if (window.electronAPI && typeof window.electronAPI.cloudHttpRequest === 'function') {
+        const res = await window.electronAPI.cloudHttpRequest({ url, method, headers, body });
+        if (res && res.ok) {
+          return {
+            ok: true,
+            status: res.status || 200,
+            text: async () => String(res.body || ''),
+            json: async () => JSON.parse(res.body || '{}')
+          };
+        }
+      }
+      return await fetch(url, {
+        method,
+        headers,
+        body: body !== null ? body : undefined,
+        cache: 'no-store'
+      });
     }
 
     function updateSyncUiStatus(text, isOnline = true) {
@@ -6894,6 +6933,64 @@ ${extraPageRule}
       }
     }
 
+    /* Compact packer so a single report is < 1.5KB (well below ntfy.sh 4096-byte inline message limit) */
+    function packReportForRelay(r) {
+      if (!r || !r.code) return null;
+      return {
+        c: r.code,
+        ca: r.createdAt || '',
+        ua: r.updatedAt || r.createdAt || '',
+        p: r.patient || {},
+        pr: r.pricing || { total: 0 },
+        rs: (r.results || []).map(it => ({
+          i: it.id,
+          v: it.giaTri ?? '',
+          n: it.ghiChu || '',
+          t: it.ten,
+          nh: it.nhom,
+          dv: it.donVi,
+          tc: it.thamChieu,
+          mn: it.min,
+          mx: it.max
+        }))
+      };
+    }
+
+    function unpackReportFromRelay(pk) {
+      if (!pk) return null;
+      if (pk.code && Array.isArray(pk.results)) return pk; // Already full format
+      if (!pk.c) return null;
+      const catMap = new Map(state.catalog.map(c => [c.id, c]));
+      return {
+        code: pk.c,
+        createdAt: pk.ca || new Date().toISOString(),
+        updatedAt: pk.ua || pk.ca || new Date().toISOString(),
+        patient: pk.p || {},
+        pricing: pk.pr || { total: 0 },
+        results: (pk.rs || []).map(x => {
+          const cat = catMap.get(x.i) || {};
+          return {
+            id: x.i,
+            ten: x.t || cat.ten || x.i,
+            nhom: x.nh || cat.nhom || 'Xét nghiệm',
+            donVi: x.dv !== undefined ? x.dv : (cat.donVi || ''),
+            thamChieu: x.tc !== undefined ? x.tc : (cat.thamChieu || ''),
+            kieu: cat.kieu || 'so',
+            min: x.mn !== undefined ? x.mn : (cat.min ?? null),
+            max: x.mx !== undefined ? x.mx : (cat.max ?? null),
+            giaTri: x.v ?? '',
+            ghiChu: x.n || '',
+            criticalAlert: null
+          };
+        })
+      };
+    }
+
+    function normalizePatientKey(p) {
+      if (!p) return '';
+      return stripVnAccents(String(p.name || '')).toLowerCase().replace(/\s+/g, ' ').trim();
+    }
+
     function mergeIncomingReports(incomingReports, incomingDeletedMap) {
       if (incomingDeletedMap && typeof incomingDeletedMap === 'object') {
         Object.keys(incomingDeletedMap).forEach(code => {
@@ -6903,6 +7000,7 @@ ${extraPageRule}
       }
 
       let changed = false;
+      const newPatientNames = [];
       const beforeCount = state.reports.length;
       if (Object.keys(deletedCodesMap).length > 0) {
         state.reports = state.reports.filter(r => !deletedCodesMap[r.code]);
@@ -6913,20 +7011,59 @@ ${extraPageRule}
         const localMap = new Map();
         state.reports.forEach(r => { if (r && r.code) localMap.set(r.code, r); });
 
-        incomingReports.forEach(remR => {
+        incomingReports.forEach(rawRem => {
+          const remR = unpackReportFromRelay(rawRem);
           if (!remR || !remR.code || deletedCodesMap[remR.code]) return;
+
+          // Ignore exact unmodified initial 209 seed reports unless local is missing them
+          if (INITIAL_REPORT_CODES.has(remR.code) && localMap.has(remR.code) && !remR.updatedAt) {
+            return;
+          }
+
           const locR = localMap.get(remR.code);
           if (!locR) {
-            state.reports.unshift(remR);
-            localMap.set(remR.code, remR);
-            changed = true;
+            // Check if this exact report (same createdAt + same patient name) was already reassigned a code earlier
+            const remPKey = normalizePatientKey(remR.patient);
+            const alreadyAssigned = remR.createdAt && state.reports.some(x =>
+              x.createdAt === remR.createdAt && normalizePatientKey(x.patient) === remPKey
+            );
+            if (!alreadyAssigned) {
+              state.reports.unshift(remR);
+              localMap.set(remR.code, remR);
+              changed = true;
+              if (!INITIAL_REPORT_CODES.has(remR.code)) {
+                newPatientNames.push(`${remR.code} (${(remR.patient && remR.patient.name) || ''})`);
+              }
+            }
           } else {
-            const remTs = String(remR.updatedAt || remR.createdAt || '');
-            const locTs = String(locR.updatedAt || locR.createdAt || '');
-            if (remTs > locTs || JSON.stringify(remR.results) !== JSON.stringify(locR.results)) {
-              if (remTs >= locTs) {
-                Object.assign(locR, remR);
+            // Same report code exists locally! Check if it's the SAME patient or a CODE COLLISION between Phone and PC
+            const locPKey = normalizePatientKey(locR.patient);
+            const remPKey = normalizePatientKey(remR.patient);
+
+            if (locPKey && remPKey && locPKey !== remPKey && !INITIAL_REPORT_CODES.has(remR.code)) {
+              // COLLISION DETECTED: Phone and PC both created e.g. XN000231 for two different patients!
+              const alreadyExistsUnderNewCode = state.reports.some(x =>
+                normalizePatientKey(x.patient) === remPKey &&
+                (x.createdAt === remR.createdAt || JSON.stringify(x.results) === JSON.stringify(remR.results))
+              );
+              if (!alreadyExistsUnderNewCode) {
+                const cloned = JSON.parse(JSON.stringify(remR));
+                cloned.code = getNextReportCode();
+                if (cloned.patient) cloned.patient.patientId = getNextPatientId();
+                state.reports.unshift(cloned);
+                localMap.set(cloned.code, cloned);
                 changed = true;
+                newPatientNames.push(`${cloned.code} (${(cloned.patient && cloned.patient.name) || ''})`);
+              }
+            } else {
+              // Same patient: update if remote is newer or has updated results
+              const remTs = String(remR.updatedAt || remR.createdAt || '');
+              const locTs = String(locR.updatedAt || locR.createdAt || '');
+              if (JSON.stringify(remR.results) !== JSON.stringify(locR.results) || JSON.stringify(remR.patient) !== JSON.stringify(locR.patient)) {
+                if (remTs >= locTs) {
+                  Object.assign(locR, remR);
+                  changed = true;
+                }
               }
             }
           }
@@ -6953,47 +7090,66 @@ ${extraPageRule}
             window.electronAPI.savePatients(state.patientsDb);
           }
         } catch (_) {}
+
         updateSidebarCounts();
         populateQuickPatientSelect();
-        if (state.activeTab === 'saved_list') renderSavedReportsTable();
-        if (state.activeTab === 'patients') renderPatientsTable();
+        renderSavedReportsTable();
+        renderPatientsTable();
+        populatePrintReportPicker();
+        populateAiReportPicker();
         if (state.activeTab === 'stats') renderStatistics();
-        if (state.activeTab === 'print_view') populatePrintReportPicker();
+
+        // If user is on Step 1 with an empty patient name form, refresh next Report ID & Patient ID automatically
+        if (state.activeTab === 'create' && state.activeStep === 1 && $('inpPatientName') && !$('inpPatientName').value.trim()) {
+          $('inpReportId').value = getNextReportCode();
+          $('inpPatientId').value = getNextPatientId();
+        }
+
+        if (newPatientNames.length > 0) {
+          showToast('☁️ Đã đồng bộ phiếu mới: ' + newPatientNames.slice(0, 2).join(', '));
+        }
       }
       return changed;
     }
 
     function getCustomOrModifiedReports() {
-      // Return reports that are newly created (> XN000230) or modified after initial seed, up to 35 most recent
       const custom = state.reports.filter(r => r && r.code && (!INITIAL_REPORT_CODES.has(r.code) || r.updatedAt));
-      return custom.length > 0 ? custom.slice(0, 35) : state.reports.slice(0, 15);
+      return custom.length > 0 ? custom.slice(0, 25) : state.reports.slice(0, 5);
     }
 
-    async function pushDeltaToCloudRelay(singleReport = null) {
-      const upserts = singleReport ? [singleReport] : getCustomOrModifiedReports();
-      const relayMsg = JSON.stringify({
-        type: 'baduy_sync_v9',
-        ts: new Date().toISOString(),
-        upserts: upserts,
-        deleted: deletedCodesMap
-      });
+    const _pushedReportHashes = {};
+    async function pushDeltaToCloudRelay(singleReport = null, forceAll = false) {
+      const targetReports = singleReport ? [singleReport] : getCustomOrModifiedReports();
 
-      // 1. Push to Real-Time Cloud Relay (ntfy.sh) - works 100% without any Vercel/Redis setup
-      try {
-        await fetch(getRelayBaseUrl(), {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: relayMsg
+      // 1. Push each report in compact < 1.5KB format prefixed with 'BADUY_V10|' to ntfy.sh
+      for (const rep of targetReports.slice(0, 8)) {
+        const packed = packReportForRelay(rep);
+        if (!packed) continue;
+        const sig = JSON.stringify({ p: packed.p, rs: packed.rs, pr: packed.pr, d: deletedCodesMap });
+        if (!forceAll && _pushedReportHashes[rep.code] === sig) continue;
+        _pushedReportHashes[rep.code] = sig;
+
+        const msgBody = 'BADUY_V10|' + JSON.stringify({
+          ts: new Date().toISOString(),
+          upserts: [packed],
+          deleted: deletedCodesMap
         });
-      } catch (_) {}
+        try {
+          await universalCloudFetch(getRelayBaseUrl(), {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: msgBody
+          });
+        } catch (_) {}
+      }
 
       // 2. Push to same-origin /api/sync if running on LAN server or Vercel domain
       if (window.location.protocol.startsWith('http')) {
         try {
-          await fetch(window.location.origin + '/api/sync', {
+          await universalCloudFetch(window.location.origin + '/api/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reports: upserts, deleted: deletedCodesMap })
+            body: JSON.stringify({ reports: state.reports, upserts: targetReports, deleted: deletedCodesMap })
           });
         } catch (_) {}
       }
@@ -7002,16 +7158,31 @@ ${extraPageRule}
       const endpoint = normalizeVercelSyncEndpoint(state.settings.cloudUrl);
       if (endpoint && endpoint.startsWith('http')) {
         try {
-          await fetch(endpoint, {
+          await universalCloudFetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reports: state.reports, deleted: deletedCodesMap })
+            body: JSON.stringify({ reports: state.reports, upserts: targetReports, deleted: deletedCodesMap })
           });
         } catch (_) {}
       }
     }
 
+    function parseRelayLineMessage(msgStr) {
+      if (!msgStr || typeof msgStr !== 'string') return null;
+      try {
+        if (msgStr.startsWith('BADUY_V10|')) {
+          return JSON.parse(msgStr.slice(10));
+        }
+        const parsed = JSON.parse(msgStr);
+        if (parsed && (parsed.type === 'baduy_sync_v9' || Array.isArray(parsed.upserts))) {
+          return parsed;
+        }
+      } catch (_) {}
+      return null;
+    }
+
     let _isSyncing = false;
+    let _hasInitialRelayPoll = false;
     async function performAutoCloudSync(showNotification = false) {
       if (_isSyncing) return;
       _isSyncing = true;
@@ -7019,8 +7190,10 @@ ${extraPageRule}
       try {
         // 1. Pull cached messages from Real-Time Cloud Relay (ntfy.sh)
         try {
-          const resRelay = await fetch(getRelayBaseUrl() + '/json?poll=1&since=all', { cache: 'no-store' });
-          if (resRelay.ok) {
+          const sinceParam = _hasInitialRelayPoll ? '10m' : '24h';
+          const resRelay = await universalCloudFetch(getRelayBaseUrl() + '/json?poll=1&since=' + sinceParam);
+          if (resRelay && resRelay.ok) {
+            _hasInitialRelayPoll = true;
             const text = await resRelay.text();
             const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
             const allUpserts = [];
@@ -7029,8 +7202,8 @@ ${extraPageRule}
               try {
                 const evt = JSON.parse(line);
                 if (evt && evt.event === 'message' && evt.message) {
-                  const inner = JSON.parse(evt.message);
-                  if (inner && inner.type === 'baduy_sync_v9') {
+                  const inner = parseRelayLineMessage(evt.message);
+                  if (inner) {
                     if (Array.isArray(inner.upserts)) allUpserts.push(...inner.upserts);
                     if (inner.deleted && typeof inner.deleted === 'object') Object.assign(allDeleted, inner.deleted);
                   }
@@ -7046,8 +7219,8 @@ ${extraPageRule}
         // 2. Pull from same-origin /api/sync (Clinic PC Wi-Fi Server or Vercel)
         if (window.location.protocol.startsWith('http')) {
           try {
-            const resOrigin = await fetch(window.location.origin + '/api/sync', { cache: 'no-store' });
-            if (resOrigin.ok) {
+            const resOrigin = await universalCloudFetch(window.location.origin + '/api/sync');
+            if (resOrigin && resOrigin.ok) {
               const data = await resOrigin.json();
               const remReports = data.reports || (data.data && data.data.reports) || [];
               const remDel = data.deleted || (data.data && data.data.deleted) || {};
@@ -7056,16 +7229,27 @@ ${extraPageRule}
           } catch (_) {}
         }
 
-        // 3. Pull from configured Vercel endpoint
+        // 3. Pull from configured Vercel endpoint FIRST (and push back unified list if local has newer/more reports)
         const endpoint = normalizeVercelSyncEndpoint(state.settings.cloudUrl);
         if (endpoint && endpoint.startsWith('http')) {
           try {
-            const resVercel = await fetch(endpoint, { cache: 'no-store' });
-            if (resVercel.ok) {
+            const resVercel = await universalCloudFetch(endpoint);
+            if (resVercel && resVercel.ok) {
               const data = await resVercel.json();
               const remReports = data.reports || (data.data && data.data.reports) || [];
               const remDel = data.deleted || (data.data && data.data.deleted) || {};
               if (mergeIncomingReports(remReports, remDel)) anyUpdated = true;
+
+              // If local has custom reports that remote /api/sync doesn't have yet, push unified reports back
+              const remCodes = new Set(remReports.map(r => r && (r.code || r.c)));
+              const missingOnRemote = state.reports.some(r => r && r.code && !INITIAL_REPORT_CODES.has(r.code) && !remCodes.has(r.code));
+              if (missingOnRemote || remReports.length === 0) {
+                await universalCloudFetch(endpoint, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ reports: state.reports, deleted: deletedCodesMap })
+                });
+              }
             }
           } catch (_) {}
         }
@@ -7074,8 +7258,6 @@ ${extraPageRule}
         updateSyncUiStatus('🟢 Đã đồng bộ Online (' + nowStr + ')', true);
         if (showNotification) {
           showToast('☁️ Đã đồng bộ 2 chiều thành công! Tổng số: ' + state.reports.length + ' phiếu xét nghiệm.');
-        } else if (anyUpdated) {
-          showToast('☁️ Đã tự động cập nhật phiếu xét nghiệm mới từ thiết bị khác!');
         }
       } catch (_) {
         updateSyncUiStatus('🟡 Đang chờ mạng đồng bộ...', false);
@@ -7094,13 +7276,10 @@ ${extraPageRule}
           try {
             const evt = JSON.parse(e.data);
             if (evt && evt.event === 'message' && evt.message) {
-              const inner = JSON.parse(evt.message);
-              if (inner && inner.type === 'baduy_sync_v9') {
+              const inner = parseRelayLineMessage(evt.message);
+              if (inner) {
                 const updated = mergeIncomingReports(inner.upserts || [], inner.deleted || {});
                 if (updated) {
-                  const firstNew = (inner.upserts && inner.upserts[0]) ? inner.upserts[0] : null;
-                  const label = firstNew ? `${firstNew.code} (${(firstNew.patient && firstNew.patient.name) || ''})` : '';
-                  showToast('☁️ Vừa nhận phiếu mới từ Điện thoại/Máy khác: ' + label);
                   updateSyncUiStatus('🟢 Vừa nhận phiếu mới (' + new Date().toTimeString().slice(0, 8) + ')', true);
                 }
               }
@@ -7115,6 +7294,7 @@ ${extraPageRule}
       state.settings.cloudToken = $('setCloudSyncToken').value.trim() || 'baduy-lab-sync';
       saveAllData();
       showToast('☁️ Đang đồng bộ 2 chiều giữa Điện thoại và Máy tính...');
+      await performAutoCloudSync(false);
       await pushDeltaToCloudRelay();
       await performAutoCloudSync(true);
       connectRealtimeCloudStream();
@@ -7277,7 +7457,7 @@ ${extraPageRule}
       // Start instant real-time cloud stream + 15-second automatic sync
       performAutoCloudSync(false);
       connectRealtimeCloudStream();
-      setInterval(() => performAutoCloudSync(false), 15000);
+      setInterval(() => performAutoCloudSync(false), 10000);
       window.addEventListener('focus', () => performAutoCloudSync(false));
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) performAutoCloudSync(false);
