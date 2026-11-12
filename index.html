@@ -780,8 +780,7 @@
           <div class="sidebar-title-l1">PHÒNG XÉT NGHIỆM Y KHOA</div>
           <div class="sidebar-title-l2">BÁ DUY</div>
           <div class="sidebar-sub">MEDICAL LABORATORY</div>
-          <span id="headerLabName" class="hidden">PHÒNG XÉT NGHIỆM Y KHOA BÁ DUY</span>
-          <span id="headerLabAddress" class="hidden">Ấp Bình Ninh, Xã Bình Ninh, tỉnh Đồng Tháp</span>
+
         </div>
       </div>
 
@@ -1454,9 +1453,7 @@
                 <tbody id="reportTableBody"></tbody>
               </table>
 
-              <div id="reportPage1FooterNote" class="hidden text-right text-[7.8pt] italic font-semibold text-teal-800 py-0.5">
-                Trang 1/2 — Xem tiếp kết quả và chữ ký xác nhận ở Trang 2 ➔
-              </div>
+
 
               <!-- Page 2 Continuation (Always carries remaining result rows together with the signature block so signature is NEVER alone) -->
               <div id="reportPage2Container" class="hidden report-page-break">
@@ -2348,29 +2345,6 @@
     </div>
   </div>
 
-  <!-- LOGIN MODAL -->
-  <div id="loginModal" style="z-index:10000;" class="no-print fixed inset-0 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full overflow-hidden">
-      <div class="bg-teal-900 px-5 py-3 text-white flex items-center justify-between">
-        <h3 class="font-extrabold text-xs sm:text-sm uppercase">Đăng Nhập Cài Đặt Hệ Thống</h3>
-        <button id="btnCloseLoginModal" type="button" class="text-white text-xl font-bold">&times;</button>
-      </div>
-      <div class="p-5 space-y-3">
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Tên đăng nhập</label>
-          <input id="loginUsername" type="text" placeholder="Nhập tên đăng nhập..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-bold" />
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Mật khẩu</label>
-          <input id="loginPassword" type="password" placeholder="Nhập mật khẩu..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-bold" />
-        </div>
-        <button id="btnSubmitLogin" type="button" class="w-full py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-sm">
-          Đăng Nhập
-        </button>
-      </div>
-    </div>
-  </div>
-
   <div id="toastContainer" class="no-print fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script>
@@ -3250,34 +3224,6 @@
     }
 
     function setupDynamicPwaManifest() {
-      try {
-        const logoImg = document.getElementById('headerLogoImg');
-        const iconUrl = logoImg ? logoImg.src : '';
-        const appleTouchLink = document.createElement('link');
-        appleTouchLink.rel = 'apple-touch-icon';
-        appleTouchLink.href = iconUrl;
-        document.head.appendChild(appleTouchLink);
-
-        // Chỉ gắn manifest PWA động khi mở trên đường link http/https thực tế (nếu gắn blob: manifest khi mở file:/// cục bộ, Microsoft Edge sẽ tạo UWP App bị lỗi "This app doesn't support print preview")
-        if (/^https?:\/\//i.test(window.location.href)) {
-          const manifestObj = {
-            name: 'Phòng Xét nghiệm Y khoa Bá Duy',
-            short_name: 'PXN Bá Duy',
-            description: 'Phần mềm Quản lý Phòng Xét nghiệm Y khoa Bá Duy - Đồng bộ Cloud iOS/Android & PC',
-            start_url: window.location.href.split('?')[0],
-            display: 'standalone',
-            background_color: '#f1f5f9',
-            theme_color: '#173a63',
-            icons: iconUrl ? [{ src: iconUrl, sizes: '192x192', type: 'image/png' }, { src: iconUrl, sizes: '512x512', type: 'image/png' }] : []
-          };
-          const blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
-          const manifestLink = document.createElement('link');
-          manifestLink.rel = 'manifest';
-          manifestLink.href = URL.createObjectURL(blob);
-          document.head.appendChild(manifestLink);
-        }
-      } catch (e) {}
-
       window.addEventListener('beforeinstallprompt', e => {
         e.preventDefault();
         deferredPwaPrompt = e;
@@ -3391,7 +3337,7 @@
         document.body.classList.add('print-mode-formal');
         const pageStyleEl = document.getElementById('dynamicPagePrintStyle');
         if (pageStyleEl) pageStyleEl.textContent = '@page { size: A4 portrait; margin: 8mm; }';
-        setTimeout(() => window.print(), 60);
+        window.print();
       }
     }
 
@@ -3621,10 +3567,9 @@
     function switchTab(tabId) {
       if ((tabId === 'tab-catalog' || tabId === 'tab-cloud') && !state.isAdminUnlocked) {
         state.pendingTabAfterLogin = tabId;
-        document.getElementById('loginUsername').value = '';
-        document.getElementById('loginPassword').value = '';
-        document.getElementById('loginModal').classList.remove('hidden');
-        document.getElementById('loginUsername').focus();
+        document.getElementById('gateLoginPassword').value = '';
+        document.getElementById('appAuthGateModal').classList.remove('hidden');
+        document.getElementById('gateLoginUsername').focus();
         return;
       }
 
@@ -4661,8 +4606,8 @@
         quickNoteInp.value = rec.generalNote || '';
       }
 
-      document.getElementById('headerLabName').textContent = state.labConfig.name.toUpperCase();
-      document.getElementById('headerLabAddress').textContent = state.labConfig.address;
+      
+      
       document.getElementById('headerLabPhone').textContent = state.labConfig.phone;
       document.getElementById('headerLabOwner').textContent = state.labConfig.owner;
       document.getElementById('reportLabAddress').textContent = state.labConfig.address;
@@ -4796,8 +4741,7 @@
 
       const tbody1 = document.getElementById('reportTableBody');
       const tbody2 = document.getElementById('reportTableBodyPage2');
-      const page1Note = document.getElementById('reportPage1FooterNote');
-      const page2Container = document.getElementById('reportPage2Container');
+            const page2Container = document.getElementById('reportPage2Container');
       const pInfoBox = sheetEl.querySelector('.patient-info-box');
       const footerWrap = document.getElementById('reportFooterSignatureWrap');
       const stampBoxEl = document.getElementById('reportStampSigBox');
@@ -4881,8 +4825,7 @@
       function layoutPages(k) {
         splitThreshold = k;
         const twoPages = k < allItems.length;
-        page1Note.classList.toggle('hidden', !twoPages);
-        page2Container.classList.toggle('hidden', !twoPages);
+                page2Container.classList.toggle('hidden', !twoPages);
         if (twoPages) {
           document.getElementById('reportPage2PatientName').textContent = rec.patientName;
           document.getElementById('reportPage2Sid').textContent = rec.code;
@@ -6587,31 +6530,6 @@
         return null;
       }
 
-      // Login Modal for unlocking Settings
-      document.getElementById('btnCloseLoginModal').addEventListener('click', () => document.getElementById('loginModal').classList.add('hidden'));
-      ['loginUsername', 'loginPassword'].forEach(id => {
-        document.getElementById(id)?.addEventListener('keydown', e => {
-          if (e.key === 'Enter') document.getElementById('btnSubmitLogin').click();
-        });
-      });
-      document.getElementById('btnSubmitLogin').addEventListener('click', () => {
-        const u = document.getElementById('loginUsername').value;
-        const p = document.getElementById('loginPassword').value;
-        const found = authenticateUserAccount(u, p);
-        if (!found || found.role !== 'admin') {
-          showToast('Sai thông tin đăng nhập hoặc tài khoản không có quyền Quản trị!', 'error');
-          return;
-        }
-        state.isAdminUnlocked = true;
-        document.getElementById('loginModal').classList.add('hidden');
-        showToast('Đã mở khóa Cài Đặt Hệ Thống');
-        if (state.pendingTabAfterLogin) {
-          const target = state.pendingTabAfterLogin;
-          state.pendingTabAfterLogin = null;
-          switchTab(target);
-        }
-      });
-
       document.getElementById('btnLockAdminSession').addEventListener('click', () => {
         state.isAdminUnlocked = false;
         switchTab('tab-entry');
@@ -7094,7 +7012,7 @@
         document.body.classList.add('print-mode-ordersheet');
         const pageStyleEl = document.getElementById('dynamicPagePrintStyle');
         if (pageStyleEl) pageStyleEl.textContent = A4_PRINT.pageStyle;
-        setTimeout(() => window.print(), 60);
+        window.print();
       });
 
       // Tab 3: Print Report Controls
@@ -7110,7 +7028,7 @@
         document.body.classList.remove('print-mode-barcode', 'print-mode-ordersheet', 'print-mode-formal');
         document.body.classList.add('print-mode-report');
         renderPrintableReport();
-        setTimeout(() => window.print(), 60);
+        window.print();
       });
 
       // Tab 4: Records, Patient Longitudinal File & Legacy Importer
@@ -7304,7 +7222,7 @@
         document.body.classList.add('print-mode-barcode');
         renderBarcodeTab();
         applyThermalAndLabelPageSize();
-        setTimeout(() => window.print(), 60);
+        window.print();
       });
 
       // Tab 6: Finance & Formal Multi-Chapter Report Export
@@ -7515,6 +7433,11 @@
         state.isAdminUnlocked = (found.role === 'admin');
         document.getElementById('appAuthGateModal').classList.add('hidden');
         showToast(`Xin chào ${found.fullName}! Đang đồng bộ dữ liệu...`);
+        if (state.pendingTabAfterLogin && state.isAdminUnlocked) {
+          const target = state.pendingTabAfterLogin;
+          state.pendingTabAfterLogin = null;
+          switchTab(target);
+        }
         if (state.cloudConfig.dbUrl) pullStateFromCloud(true);
       });
 
@@ -7628,19 +7551,19 @@
           '(',
           '  echo @echo off',
           '  echo if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" (',
-          '  echo   start "" "%ProgramFiles%\Google\Chrome\Application\chrome.exe" --app="file:///%APP_DIR%/index.html" --start-maximized',
+          '  echo   start "" "%ProgramFiles%\Google\Chrome\Application\chrome.exe" --start-maximized "file:///%APP_DIR%/index.html"',
           '  echo   exit',
           '  echo ^)',
           '  echo if exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" (',
-          '  echo   start "" "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" --app="file:///%APP_DIR%/index.html" --start-maximized',
+          '  echo   start "" "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" --start-maximized "file:///%APP_DIR%/index.html"',
           '  echo   exit',
           '  echo ^)',
           '  echo if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" (',
-          '  echo   start "" "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" --app="file:///%APP_DIR%/index.html" --start-maximized',
+          '  echo   start "" "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" --start-maximized "file:///%APP_DIR%/index.html"',
           '  echo   exit',
           '  echo ^)',
           '  echo if exist "%ProgramFiles%\Microsoft\Edge\Application\msedge.exe" (',
-          '  echo   start "" "%ProgramFiles%\Microsoft\Edge\Application\msedge.exe" --app="file:///%APP_DIR%/index.html" --start-maximized',
+          '  echo   start "" "%ProgramFiles%\Microsoft\Edge\Application\msedge.exe" --start-maximized "file:///%APP_DIR%/index.html"',
           '  echo   exit',
           '  echo ^)',
           '  echo start "" "%APP_DIR%\index.html"',
@@ -7763,7 +7686,6 @@
         const cloned = cloneElementWithCanvasImages(sourceEl);
         if (cloned) cloned.classList.remove('hidden');
 
-        // Copy all styles except #dynamicPagePrintStyle so we put the single authoritative @page rule at the end
         const allStyles = Array.from(document.querySelectorAll('style'))
           .filter(s => s.id !== 'dynamicPagePrintStyle')
           .map(s => s.outerHTML)
@@ -7785,54 +7707,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${document.title || 'Phieu_Xet_Nghiem_Ba_Duy'}</title>
+  <title>In Phiếu Xét Nghiệm - Phòng Xét Nghiệm Y Khoa Bá Duy</title>
   ${allStyles}
   <style id="dynamicPagePrintStyle">${pageStyleText}</style>
+  <style>
+    body { background: #cbd5e1 !important; margin: 0; padding: 0; }
+    .top-print-bar {
+      position: sticky; top: 0; z-index: 999; background: #0f172a; color: #fff;
+      padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
+      font-family: 'Inter', 'Be Vietnam Pro', system-ui, sans-serif;
+    }
+    .sheet-stage { padding: 20px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .tab-panel, .tab-panel.active { display: block !important; opacity: 1 !important; transform: none !important; animation: none !important; }
+    @media print {
+      .top-print-bar, .no-print { display: none !important; }
+      body, html { background: #ffffff !important; margin: 0 !important; padding: 0 !important; }
+      .sheet-stage, .app-shell, .app-main, main { padding: 0 !important; gap: 0 !important; margin: 0 !important; display: block !important; width: 100% !important; }
+    }
+  </style>
 </head>
-<body class="${bodyClass}" style="background:#ffffff;margin:0;padding:0;">
-  <div class="no-print" style="position:sticky;top:0;z-index:999;background:#173a63;color:#fff;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;font-family:sans-serif;">
-    <div style="font-size:13px;font-weight:700;">🖨️ ${ctx.label} — ${ctx.isThermal ? 'Khổ Máy In Nhiệt' : 'Khổ Máy In Thường (A4/A5)'}</div>
-    <div style="display:flex;gap:8px;">
-      <button onclick="window.print()" style="background:#fff;color:#173a63;border:none;padding:5px 14px;border-radius:6px;font-weight:800;cursor:pointer;font-size:12px;">🖨️ In lại (Ctrl + P)</button>
-      <button onclick="window.close()" style="background:#102a49;color:#fff;border:none;padding:5px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px;">Đóng</button>
+<body class="${bodyClass}">
+  <div class="top-print-bar no-print">
+    <strong>🖨️ BẢN IN TRÊN HTML (${ctx.label}) — PHÒNG XÉT NGHIỆM Y KHOA BÁ DUY</strong>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button onclick="window.print()" style="background:#0d8a7b;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-weight:800;cursor:pointer;">🖨️ Bấm Để In Ngay (Ctrl+P)</button>
+      <button onclick="window.close()" style="background:#ef4444;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;">✕ Đóng</button>
     </div>
   </div>
-  <div class="app-shell">
-    <main>
-      ${wrapperHtml}
-    </main>
-  </div>
+  <div class="sheet-stage">${wrapperHtml}</div>
   <script>
     window.addEventListener('load', function() {
-      setTimeout(function() { window.print(); }, 120);
+      setTimeout(function() {
+        window.print();
+      }, 300);
     });
   <` + `/script>
 </body>
 </html>`;
       }
 
-      window.print = async function() {
+      async function triggerHtmlPrint() {
         const ctx = detectActivePrintContext();
-        if (window.labflowDesktop && typeof window.labflowDesktop.openBrowserPrint === 'function') {
-          const standaloneHtml = buildStandaloneBrowserPrintHtml(ctx);
-          await window.labflowDesktop.openBrowserPrint(standaloneHtml, document.title || 'Phieu_XN', ctx.isThermal, ctx.format);
+        const standaloneHtml = buildStandaloneBrowserPrintHtml(ctx);
+        const rec = state.records.find(r => r.id === state.currentPrintRecordId) || state.records[0];
+        const rCode = (rec && rec.code) ? String(rec.code).replace(/[^a-zA-Z0-9_-]/g, '_') : 'XN000001';
+        const fileName = 'Phieu-In-' + rCode + '.html';
+
+        // 1. If running inside the .exe Desktop App (Electron), NEVER call Electron's native window.print()
+        // (which shows Windows "This app doesn't support print preview"). Always open in web browser (Chrome / Cốc Cốc / Edge / Internet)!
+        if (window.electronAPI) {
+          const fn = window.electronAPI.openPrintHtml || window.electronAPI.openPrintPreviewWindow || window.electronAPI.openBrowserPrint;
+          if (typeof fn === 'function') {
+            showToast('🖨️ Đang mở trang in trên trình duyệt web...');
+            await fn({ htmlContent: standaloneHtml, fileName: fileName });
+            return;
+          }
+          const blob = new Blob([standaloneHtml], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+          showToast('Đã tải file in HTML (' + fileName + '). Hãy mở file để in trên trình duyệt!');
           return;
         }
-        // If opened as an installed PWA/App window where Windows hides print preview, open a clean browser tab with Print Preview
-        const isStandaloneApp = window.matchMedia && (window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: minimal-ui)').matches);
-        if (isStandaloneApp) {
+
+        // 2. Support other desktop bridges if present
+        if (window.labflowDesktop && typeof window.labflowDesktop.openBrowserPrint === 'function') {
+          showToast('🖨️ Đang mở trang in trên trình duyệt web...');
+          await window.labflowDesktop.openBrowserPrint(standaloneHtml, document.title || fileName, ctx.isThermal, ctx.format);
+          return;
+        }
+        if (window.baDuyDesktopApp && typeof window.baDuyDesktopApp.openBrowserPrint === 'function') {
+          showToast('🖨️ Đang mở trang in trên trình duyệt web...');
+          await window.baDuyDesktopApp.openBrowserPrint(standaloneHtml, document.title || fileName, ctx.isThermal, ctx.format);
+          return;
+        }
+
+        // 3. Direct Node.js / Electron renderer fallback if nodeIntegration is enabled
+        if (typeof window.require === 'function') {
           try {
-            const standaloneHtml = buildStandaloneBrowserPrintHtml(ctx);
-            const blob = new Blob([standaloneHtml], { type: 'text/html;charset=utf-8' });
-            const blobUrl = URL.createObjectURL(blob);
-            const win = window.open(blobUrl, '_blank');
-            if (win) {
-              setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+            const fs = window.require('fs');
+            const os = window.require('os');
+            const path = window.require('path');
+            const tmpPath = path.join(os.tmpdir(), fileName);
+            fs.writeFileSync(tmpPath, standaloneHtml, 'utf8');
+            const electron = window.require('electron');
+            if (electron && electron.shell && typeof electron.shell.openPath === 'function') {
+              showToast('🖨️ Đang mở trang in trên trình duyệt web...');
+              await electron.shell.openPath(tmpPath);
               return;
             }
-          } catch (e) {}
+          } catch (_) {}
         }
+
+        // 4. In standard Web Browser or PWA: open standalone HTML print page in a new browser tab
+        try {
+          const win = window.open('', '_blank');
+          if (win && win.document) {
+            win.document.open();
+            win.document.write(standaloneHtml);
+            win.document.close();
+            return;
+          }
+        } catch (_) {}
+
         nativeWindowPrint();
+      }
+
+      window.print = function() {
+        return triggerHtmlPrint();
       };
 
     });
