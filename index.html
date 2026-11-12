@@ -837,7 +837,7 @@
           <span class="truncate">👤 <strong id="headerLabOwner">XNCK1. Võ Bá Duy</strong></span>
           <span style="font-size:10.5px;background:rgba(255,255,255,0.18);padding:2px 6px;border-radius:6px;flex-shrink:0;">Admin</span>
         </div>
-        <div style="font-size:11px;color:#93c5fd;margin-bottom:5px;" id="sidebarHotline">
+        <div style="font-size:11px;color:#93c5fd;margin-bottom:5px;">
           📞 <strong id="headerLabPhone">0372111445</strong>
         </div>
         <button id="btnHeaderCloudStatus" type="button" style="width:100%;text-align:left;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:6px 9px;font-size:11px;color:#5eead4;margin-bottom:6px;display:flex;align-items:center;gap:6px;cursor:pointer;" title="Bấm để mở cấu hình Đồng bộ Đám mây & Cài App iOS/Android">
@@ -887,9 +887,12 @@
 
         <!-- STEP 1 PANEL: PATIENT DEMOGRAPHICS -->
         <div id="entryStep1" class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-          <div class="bg-teal-800 px-5 py-3 flex items-center justify-between text-white">
+          <div class="bg-teal-800 px-5 py-3 flex flex-wrap items-center justify-between gap-2 text-white">
             <span class="font-extrabold text-sm uppercase">Bước 1: Nhập Thông Tin Hành Chính Bệnh Nhân</span>
-            <span id="entryModeBadge" class="text-xs bg-white/20 px-2.5 py-0.5 rounded-full font-semibold">Phiếu mới</span>
+            <div class="flex items-center gap-2">
+              <span id="entryModeBadge" class="text-xs bg-white/20 px-2.5 py-0.5 rounded-full font-semibold">Phiếu mới</span>
+              <button id="btnResetNewOrder" type="button" class="px-2.5 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition">+ Tạo phiếu mới</button>
+            </div>
           </div>
 
           <div class="p-5 space-y-4">
@@ -1085,7 +1088,7 @@
 
                 <div class="flex items-center justify-between text-xs text-slate-600">
                   <span id="lblAppliedPackages" class="font-bold text-teal-800"></span>
-                  <button id="btnRecalcPriceFromRows" type="button" class="font-bold text-teal-700 hover:underline">↻ Cộng lại theo đơn giá lẻ</button>
+                  <button id="btnRecalcPriceFromRows" type="button" class="font-bold text-teal-700 hover:underline">↻ Tính lại tự động (Gói + XN lẻ)</button>
                 </div>
               </div>
 
@@ -2157,9 +2160,6 @@
                   <span>🌐 Kết Nối Tài Khoản Google Gemini Web (`gemini.google.com`)</span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <button id="btnInjectPromptIntoWebview" type="button" class="px-2.5 py-1 rounded bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-[11px]">
-                    ⚡ Nạp Lệnh & KQ Vào Gemini
-                  </button>
                   <button id="btnLaunchPopupGeminiWindow" type="button" class="px-2.5 py-1 rounded bg-white text-blue-900 font-extrabold text-[11px]">
                     ↗ Mở Cửa Sổ Đăng Nhập Gemini
                   </button>
@@ -2176,6 +2176,15 @@
                 <div>
                   <div class="text-[11px] font-bold text-slate-500 uppercase mb-1">Lệnh & Dữ liệu xét nghiệm đã chuẩn bị sẵn cho Gemini:</div>
                   <textarea id="txtCompiledGeminiPromptPreview" rows="4" readonly class="w-full rounded-lg border border-slate-300 bg-white p-2 font-mono text-[11px] text-slate-700"></textarea>
+                </div>
+                <!-- Inline Paste Box (replaces browser window.prompt) -->
+                <div id="geminiInlinePasteBox" class="hidden pt-2 border-t border-slate-200 space-y-2">
+                  <div class="text-[11px] font-bold text-violet-900 uppercase">Dán phản hồi từ Gemini Web vào đây để đưa sang Bản Word:</div>
+                  <textarea id="txtGeminiPasteInput" rows="4" placeholder="Nhấn Ctrl + V để dán nội dung phân tích từ Gemini Web..." class="w-full rounded-lg border border-violet-300 bg-white p-2 text-xs text-slate-800 focus:outline-none focus:border-violet-500"></textarea>
+                  <div class="flex justify-end gap-2">
+                    <button id="btnCancelGeminiPaste" type="button" class="px-3 py-1 rounded-lg border border-slate-300 bg-white text-slate-700 font-bold text-xs">Đóng</button>
+                    <button id="btnApplyGeminiPaste" type="button" class="px-3.5 py-1 rounded-lg bg-violet-700 hover:bg-violet-800 text-white font-bold text-xs">Đưa vào Bản Word</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2471,7 +2480,7 @@
     ];
 
     const DEFAULT_PACKAGES = [
-      { id: 'general_checkup', name: 'Gói Khám Sức Khỏe Tổng Quát', price: 450000, desc: 'Huyết học + Đường + Mỡ + Gan + Thận + Nước tiểu', testIds: ['wbc', 'rbc', 'hgb', 'hct', 'plt', 'glucose', 'chol', 'trig', 'hdl', 'ldl', 'uric', 'ast', 'alt', 'urea', 'crea', 'u_leu', 'u_pro', 'u_glu'] },
+      { id: 'general_checkup', name: 'Gói Khám Sức Khỏe Tổng Quát', price: 450000, desc: 'Huyết học + Đường + Mỡ + Gan + Thận + Nước tiểu', testIds: ['wbc', 'neu', 'lym', 'mono', 'eos', 'rbc', 'hgb', 'hct', 'mcv', 'mch', 'mchc', 'rdw', 'plt', 'mpv', 'glucose', 'chol', 'trig', 'hdl', 'ldl', 'uric', 'ast', 'alt', 'ggt', 'urea', 'crea', 'egfr', 'u_leu', 'u_nit', 'u_pro', 'u_glu', 'uket', 'ublo', 'uuro', 'u_ph', 'u_sg'] },
       { id: 'parasite_worm', name: 'Gói Xét Nghiệm Giun Sán - Ký Sinh Trùng', price: 300000, desc: 'Giun đũa chó/mèo, Giun lươn, Sán chó & Ký sinh trùng', testIds: ['toxocara', 'strongy', 'echinococcus'] },
       { id: 'cbc', name: 'Gói Tổng Phân Tích Máu (CBC)', price: 90000, desc: 'Đánh giá bạch cầu, hồng cầu, tiểu cầu', testIds: ['wbc', 'neu', 'lym', 'mono', 'eos', 'rbc', 'hgb', 'hct', 'mcv', 'mch', 'plt'] },
       { id: 'biochem_basic', name: 'Gói Tiểu Đường - Mỡ Máu - Gout', price: 240000, desc: 'Glucose, HbA1c, Bộ mỡ máu & Acid Uric', testIds: ['glucose', 'hba1c', 'chol', 'trig', 'hdl', 'ldl', 'uric'] },
@@ -2672,7 +2681,8 @@
           }
         }
         const sp = localStorage.getItem(STORAGE_KEYS.PACKAGES);
-        if (sp) state.packages = JSON.parse(sp);
+        if (sp) state.packages = normalizePackagesList(JSON.parse(sp));
+        else state.packages = normalizePackagesList(state.packages);
         const sf = localStorage.getItem(STORAGE_KEYS.FINANCE);
         if (sf) state.financeLedger = JSON.parse(sf);
         const sa = localStorage.getItem(STORAGE_KEYS.ACCOUNTS);
@@ -2968,20 +2978,28 @@
       return Array.from(map.values());
     }
 
-    function refreshAllViewsAfterSync() {
+    function isUserTypingInInput() {
+      const el = document.activeElement;
+      if (!el) return false;
+      const tag = (el.tagName || '').toUpperCase();
+      return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable;
+    }
+
+    function refreshAllViewsAfterSync(isBackgroundSync = false) {
       updateSidebarRecordCountBadge();
       populateRecordSelectors();
+      if (isBackgroundSync && isUserTypingInInput()) {
+        return;
+      }
       if (state.activeTab === 'tab-records') renderRecordsTab();
       if (state.activeTab === 'tab-print') renderPrintableReport();
       if (state.activeTab === 'tab-finance') renderFinanceTab();
-      if (state.activeTab === 'tab-catalog') renderCatalogTab();
-      if (state.activeTab === 'tab-order-sheet') renderOrderSheetTab();
+      if (state.activeTab === 'tab-catalog' && !isBackgroundSync) renderCatalogTab();
+      if (state.activeTab === 'tab-order-sheet' && !isBackgroundSync) renderOrderSheetTab();
       if (state.activeTab === 'tab-barcode') renderBarcodeTab();
-      if (state.activeTab === 'tab-gemini') renderGeminiTab();
-      if (state.activeTab === 'tab-cloud') renderCloudTab();
-      if (state.activeTab === 'tab-entry') {
-        if (state.activeEntryStep === 2) renderStep2SelectionScreen();
-        if (state.activeEntryStep === 3) renderEntryResultTable();
+      if (state.activeTab === 'tab-gemini' && !isBackgroundSync) renderGeminiTab();
+      if (state.activeTab === 'tab-cloud' && !isBackgroundSync) renderCloudTab();
+      if (state.activeTab === 'tab-entry' && !isBackgroundSync) {
         const nameInp = document.getElementById('inpPatientName');
         const codeInp = document.getElementById('inpPatientCode');
         if (!state.editingRecordId && nameInp && !nameInp.value.trim() && codeInp) {
@@ -3022,7 +3040,7 @@
                   state.catalog = upgradeCatalogWithDualDefaults(mergeByKeySmart(state.catalog, remoteData.catalog, 'id', state.cloudConfig.deletedCatalogIds));
                 }
                 if (Array.isArray(remoteData.packages) && remoteData.packages.length > 0) {
-                  state.packages = mergeByKeySmart(state.packages, remoteData.packages, 'id', state.cloudConfig.deletedPackageIds);
+                  state.packages = normalizePackagesList(mergeByKeySmart(state.packages, remoteData.packages, 'id', state.cloudConfig.deletedPackageIds));
                 }
                 if (Array.isArray(remoteData.financeLedger) && remoteData.financeLedger.length > 0) {
                   state.financeLedger = mergeByKeySmart(state.financeLedger, remoteData.financeLedger, 'id', state.cloudConfig.deletedFinanceIds);
@@ -3058,7 +3076,7 @@
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         state.cloudConfig.lastSyncTimestamp = payload.updatedAt;
         saveState(true);
-        refreshAllViewsAfterSync();
+        refreshAllViewsAfterSync(silent);
         updateCloudStatusBadges('online', `${state.records.length} hồ sơ`);
         if (!silent) showToast(`☁️ Đã đồng bộ hợp nhất 2 chiều thành công (${state.records.length} hồ sơ)!`);
         isCloudSyncing = false;
@@ -3112,7 +3130,7 @@
         }
         const remotePackages = Array.isArray(data.packages) ? data.packages : [];
         if (remotePackages.length > 0) {
-          state.packages = mergeByKeySmart(state.packages, remotePackages, 'id', state.cloudConfig.deletedPackageIds);
+          state.packages = normalizePackagesList(mergeByKeySmart(state.packages, remotePackages, 'id', state.cloudConfig.deletedPackageIds));
         }
         const remoteFinance = Array.isArray(data.financeLedger) ? data.financeLedger : [];
         if (remoteFinance.length > 0) {
@@ -3129,7 +3147,7 @@
 
         state.cloudConfig.lastSyncTimestamp = Math.max(Date.now(), remoteTime);
         saveState(true);
-        refreshAllViewsAfterSync();
+        refreshAllViewsAfterSync(silent);
 
         const hasLocalRecordsMissingOnCloud = state.records.some(r => !remoteRecordIds.has(getRecordUniqueKey(r)));
         const hasMoreLocalMeta =
@@ -3289,6 +3307,15 @@
       return (Math.round(Number(num) || 0)).toLocaleString('vi-VN') + ' đ';
     }
 
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function showToast(message, type = 'success') {
       const container = document.getElementById('toastContainer');
       if (!container) return;
@@ -3402,6 +3429,36 @@
         }
       });
       return Array.from(map.values());
+    }
+
+    function normalizePackagesList(rawPackages) {
+      const delPkgSet = new Set((state.cloudConfig && state.cloudConfig.deletedPackageIds || []).map(String));
+      const list = Array.isArray(rawPackages) && rawPackages.length > 0 ? rawPackages : DEFAULT_PACKAGES;
+      const result = [];
+      const seenIds = new Set();
+      list.forEach(pkg => {
+        if (!pkg || typeof pkg !== "object") return;
+        const pid = String(pkg.id || ("pkg_" + Date.now()));
+        if (delPkgSet.has(pid) || seenIds.has(pid)) return;
+        seenIds.add(pid);
+        const rawIds = Array.isArray(pkg.testIds) ? pkg.testIds : (Array.isArray(pkg.tests) ? pkg.tests : (Array.isArray(pkg.items) ? pkg.items : []));
+        let canonicalIds = Array.from(new Set(rawIds.map(x => canonicalTestId(typeof x === "object" ? (x.id || x.testId) : x)).filter(Boolean)));
+        if (pid === "general_checkup" || String(pkg.name || "").toLowerCase().includes("tổng quát")) {
+          const defGen = DEFAULT_PACKAGES.find(d => d.id === "general_checkup");
+          if (defGen) {
+            canonicalIds = Array.from(new Set([...canonicalIds, ...defGen.testIds.map(canonicalTestId)]));
+          }
+        }
+        result.push({
+          ...pkg,
+          id: pid,
+          name: String(pkg.name || "Gói xét nghiệm").trim(),
+          price: Number(pkg.price) || 0,
+          desc: String(pkg.desc || `${canonicalIds.length} chỉ số`),
+          testIds: canonicalIds
+        });
+      });
+      return result.length > 0 ? result : [...DEFAULT_PACKAGES];
     }
 
     function isDualQualQuantRow(row) {
@@ -3539,8 +3596,23 @@
       const yy = String(now.getFullYear()).slice(-2);
       const mm = pad(now.getMonth() + 1);
       const dd = pad(now.getDate());
-      const seq = String(state.records.length + 1).padStart(3, '0');
-      return `XN${yy}${mm}${dd}-${seq}`;
+      const prefix = `XN${yy}${mm}${dd}-`;
+      const existingCodes = new Set((state.records || []).map(r => String(r.code || '').trim().toUpperCase()));
+      let maxSeq = state.records.length;
+      (state.records || []).forEach(r => {
+        const c = String(r.code || '').trim().toUpperCase();
+        if (c.startsWith(prefix)) {
+          const tailNum = parseInt(c.slice(prefix.length), 10);
+          if (!isNaN(tailNum) && tailNum > maxSeq) maxSeq = tailNum;
+        }
+      });
+      let nextSeq = maxSeq + 1;
+      let candidate = `${prefix}${String(nextSeq).padStart(3, '0')}`;
+      while (existingCodes.has(candidate)) {
+        nextSeq++;
+        candidate = `${prefix}${String(nextSeq).padStart(3, '0')}`;
+      }
+      return candidate;
     }
 
     // =========================================================================
@@ -3561,6 +3633,10 @@
         populateSingleTestDropdown();
         renderEntryResultTable();
         updateEntryPaymentQRDisplay();
+        setTimeout(() => {
+          const firstEmptyIdx = state.entryRows.findIndex(r => !String(r.value || '').trim());
+          focusEntryResultRowInput(firstEmptyIdx >= 0 ? firstEmptyIdx : 0);
+        }, 40);
       }
     }
 
@@ -3604,6 +3680,23 @@
     // =========================================================================
     // 6. STEP 2 & STEP 3: PACKAGE & SINGLE TEST SELECTION WITH ANTI-DUPLICATE
     // =========================================================================
+    function deduplicateEntryRows() {
+      if (!Array.isArray(state.entryRows)) {
+        state.entryRows = [];
+        return;
+      }
+      const seen = new Set();
+      const clean = [];
+      state.entryRows.forEach(r => {
+        if (!r) return;
+        const cid = canonicalTestId(r.testId || r.id || r.name);
+        if (seen.has(cid)) return;
+        seen.add(cid);
+        clean.push(r);
+      });
+      state.entryRows = clean;
+    }
+
     function getTestIdsCoveredBySelectedPackages() {
       const covered = new Set();
       state.entrySelectedPkgIds.forEach(pid => {
@@ -3620,6 +3713,7 @@
 
     // Smart Package + Single Test Pricing with ZERO Double-Charging on Overlapping Tests
     function calculateSmartEntryPricing() {
+      deduplicateEntryRows();
       const selectedPkgs = state.packages
         .filter(pkg => state.entrySelectedPkgIds.includes(pkg.id))
         .slice()
@@ -3765,11 +3859,11 @@
                 // Already in selected package! Make sure it's in entryRows if somehow missing, and NEVER add extra money
                 if (existingIdx < 0) {
                   const rowObj = {
-                    testId: t.id, category: t.category, name: t.name, value: t.normalSample || '',
+                    testId: t.id, category: t.category, name: t.name, value: '',
+                    normalSample: t.normalSample || '',
                     refText: t.refText, minM: t.minM, maxM: t.maxM, minF: t.minF, maxF: t.maxF,
                     unit: t.unit, price: t.price || 0, note: ''
                   };
-                  rowObj.note = evaluateTestResult(rowObj, gender).autoNote;
                   state.entryRows.push(rowObj);
                 }
                 recalculateEntryBilling();
@@ -3781,11 +3875,11 @@
                 state.entryRows.splice(existingIdx, 1);
               } else {
                 const rowObj = {
-                  testId: t.id, category: t.category, name: t.name, value: t.normalSample || '',
+                  testId: t.id, category: t.category, name: t.name, value: '',
+                  normalSample: t.normalSample || '',
                   refText: t.refText, minM: t.minM, maxM: t.maxM, minF: t.minF, maxF: t.maxF,
                   unit: t.unit, price: t.price || 0, note: ''
                 };
-                rowObj.note = evaluateTestResult(rowObj, gender).autoNote;
                 state.entryRows.push(rowObj);
               }
               recalculateEntryBilling();
@@ -3820,21 +3914,27 @@
           return !pkgCanonicalSet.has(cid) || stillCovered.has(cid);
         });
       } else {
+        const pkgCanonicalIds = new Set((pkg.testIds || []).map(canonicalTestId));
+        const absorbedNames = state.entryRows
+          .filter(r => pkgCanonicalIds.has(canonicalTestId(r.testId || r.id)))
+          .map(r => r.name);
         state.entrySelectedPkgIds.push(pkgId);
         (pkg.testIds || []).forEach(tid => {
           const cid = canonicalTestId(tid);
           const catItem = state.catalog.find(c => canonicalTestId(c.id) === cid);
-          if (catItem && !state.entryRows.some(r => canonicalTestId(r.testId) === cid)) {
+          if (catItem && !state.entryRows.some(r => canonicalTestId(r.testId || r.id) === cid)) {
             const rowObj = {
               testId: catItem.id, category: catItem.category, name: catItem.name,
-              value: catItem.normalSample || '', refText: catItem.refText,
+              value: '', normalSample: catItem.normalSample || '', refText: catItem.refText,
               minM: catItem.minM, maxM: catItem.maxM, minF: catItem.minF, maxF: catItem.maxF,
               unit: catItem.unit, price: catItem.price || 0, note: ''
             };
-            rowObj.note = evaluateTestResult(rowObj, gender).autoNote;
             state.entryRows.push(rowObj);
           }
         });
+        if (absorbedNames.length > 0) {
+          showToast(`Đã chọn "${pkg.name}" — Tự động gộp ${absorbedNames.length} XN trùng trong gói về 0đ (không cộng dồn tiền)!`);
+        }
       }
 
       state.entrySelectedPackageNames = state.entrySelectedPkgIds
@@ -3936,14 +4036,15 @@
         div.addEventListener('click', () => {
           const gender = document.getElementById('inpGender').value;
           const rowObj = {
-            testId: item.id, category: item.category, name: item.name, value: item.normalSample || '',
+            testId: item.id, category: item.category, name: item.name, value: '',
+            normalSample: item.normalSample || '',
             refText: item.refText, minM: item.minM, maxM: item.maxM, minF: item.minF, maxF: item.maxF,
             unit: item.unit, price: item.price || 0, note: ''
           };
-          rowObj.note = evaluateTestResult(rowObj, gender).autoNote;
           state.entryRows.push(rowObj);
           document.getElementById('inpStep3FilterSingleTest').value = '';
           renderEntryResultTable();
+          focusEntryResultRowInput(state.entryRows.length - 1);
           recalculateEntryBilling();
           populateSingleTestDropdown(false);
           showToast(isInPkg ? `Đã thêm "${item.name}" (Đã nằm trong gói — 0đ phụ thu)` : `Đã thêm: ${item.name}`);
@@ -3957,6 +4058,37 @@
       state.entrySelectedPkgIds = [];
       state.entrySelectedPackageNames = [];
       state.entryRows = [];
+
+      const badge = document.getElementById('entryModeBadge');
+      if (badge) {
+        badge.textContent = 'Phiếu mới';
+        badge.className = 'text-xs bg-white/20 px-2.5 py-0.5 rounded-full font-semibold';
+      }
+
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const localIso = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+      const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+      setVal('inpPatientCode', generateNextPatientCode());
+      setVal('inpPatientName', '');
+      setVal('inpBirthYear', '');
+      setVal('inpAge', '');
+      setVal('inpGender', 'Nam');
+      setVal('inpPhone', '');
+      setVal('inpAddress', '');
+      setVal('inpObject', 'Dịch vụ');
+      setVal('inpDoctor', '');
+      setVal('inpSpecimen', 'Máu toàn phần & Huyết thanh');
+      setVal('inpResultTime', localIso);
+      setVal('inpDiagnosis', '');
+      setVal('inpStatus', 'completed');
+      setVal('inpGeneralNote', '');
+      setVal('inpDiscountPercent', 0);
+      setVal('inpDiscountAmount', 0);
+      setVal('inpVatPercent', 0);
+      setVal('inpPaymentMethod', 'Chuyển khoản QR');
+
       recalculateEntryBilling(0);
       renderStep2SelectionScreen();
       populateSingleTestDropdown();
@@ -4019,6 +4151,21 @@
       }
     }
 
+    function focusEntryResultRowInput(rowIdx) {
+      if (rowIdx < 0 || rowIdx >= state.entryRows.length) return false;
+      const isSmallScreen = window.innerWidth < 768;
+      const showMobile = state.entryLayoutMode === 'mobile' || (state.entryLayoutMode === 'auto' && isSmallScreen);
+      const target = showMobile
+        ? document.querySelector(`.mob-val-input[data-mob-idx="${rowIdx}"]`)
+        : document.getElementById(`deskValInput_${rowIdx}`);
+      if (target) {
+        target.focus();
+        try { target.select(); } catch (_) {}
+        return true;
+      }
+      return false;
+    }
+
     function renderEntryResultTable() {
       const tbody = document.getElementById('entryResultTableBody');
       const mobileContainer = document.getElementById('entryResultMobileCards');
@@ -4027,6 +4174,21 @@
       document.getElementById('selectedTestCountBadge').textContent = `${state.entryRows.length} chỉ số`;
       document.getElementById('step2CountBadge').textContent = state.entryRows.length;
       updateEntryLayoutVisibility();
+
+      // Save active focus & cursor position in case renderEntryResultTable is called while an input is focused
+      let savedFocus = null;
+      const activeEl = document.activeElement;
+      if (activeEl && (tbody?.contains(activeEl) || mobileContainer?.contains(activeEl))) {
+        savedFocus = {
+          id: activeEl.id || null,
+          rowIdx: activeEl.getAttribute('data-row-idx'),
+          field: activeEl.getAttribute('data-field'),
+          mobIdx: activeEl.getAttribute('data-mob-idx'),
+          mobNoteIdx: activeEl.getAttribute('data-mob-note-idx'),
+          selStart: activeEl.selectionStart,
+          selEnd: activeEl.selectionEnd
+        };
+      }
 
       if (state.entryRows.length === 0) {
         tbody.innerHTML = `<tr><td colspan="9" class="py-6 text-center text-slate-400">Chưa có chỉ số xét nghiệm.</td></tr>`;
@@ -4042,22 +4204,27 @@
         if (row.note === undefined) row.note = evalRes.autoNote || '';
         const isDual = isDualQualQuantRow(row);
         const isInPkg = coveredByPkg.has(canonicalTestId(row.testId || row.id));
+        const catItem = state.catalog.find(c => canonicalTestId(c.id) === canonicalTestId(row.testId || row.id));
+        const hintSample = row.normalSample || (catItem && catItem.normalSample) || '';
+        const placeholderText = isDual
+          ? 'Nhập số hoặc Âm/Dương (Enter xuống dòng)...'
+          : (hintSample ? `Nhập KQ (VD: ${escapeHtml(hintSample)})...` : 'Nhập KQ (Enter xuống dòng)...');
 
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-50 transition';
         tr.innerHTML = `
           <td class="py-2 px-2 text-center font-bold text-slate-500">${idx + 1}</td>
           <td class="py-2 px-2.5">
-            <input type="text" data-row-idx="${idx}" data-field="name" value="${row.name}" class="entry-cell-input w-full font-bold text-slate-800 bg-transparent border-b border-transparent focus:border-teal-500 focus:outline-none" />
+            <input type="text" tabindex="-1" data-row-idx="${idx}" data-field="name" value="${escapeHtml(row.name)}" class="entry-cell-input w-full font-bold text-slate-800 bg-transparent border-b border-transparent focus:border-teal-500 focus:outline-none" />
             ${isDual ? `<div class="text-[10px] font-semibold text-teal-700 mt-0.5">Hỗ trợ nhập Số định lượng & Định tính (Âm/Dương)</div>` : ''}
           </td>
           <td class="py-2 px-2">
-            <input type="text" id="deskValInput_${idx}" data-row-idx="${idx}" data-field="value" value="${row.value}" placeholder="${isDual ? 'Nhập số hoặc Âm/Dương...' : 'Nhập KQ...'}" class="entry-val-input w-full rounded border px-2.5 py-1.5 font-bold focus:outline-none focus:ring-1 focus:ring-teal-500 ${evalRes.flag === 'H' || evalRes.flag === 'POS' ? 'bg-rose-50 text-rose-700 border-rose-300' : evalRes.flag === 'L' ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-white text-slate-900 border-slate-300'}" />
+            <input type="text" id="deskValInput_${idx}" data-row-idx="${idx}" data-field="value" value="${escapeHtml(row.value)}" autocomplete="off" placeholder="${placeholderText}" class="entry-val-input w-full rounded border px-2.5 py-1.5 font-bold focus:outline-none focus:ring-2 focus:ring-teal-500 ${evalRes.flag === 'H' || evalRes.flag === 'POS' ? 'bg-rose-50 text-rose-700 border-rose-300' : evalRes.flag === 'L' ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-white text-slate-900 border-slate-300'}" />
             ${isDual ? `
             <div class="flex flex-wrap items-center gap-1 mt-1">
-              <button type="button" data-qrow="${idx}" data-qmode="neg" class="btn-desk-qual px-1.5 py-0.5 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-[10px]" title="Điền Âm tính">Âm tính</button>
-              <button type="button" data-qrow="${idx}" data-qmode="pos" class="btn-desk-qual px-1.5 py-0.5 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-[10px]" title="Điền Dương tính">Dương tính</button>
-              <button type="button" data-qrow="${idx}" data-qmode="both" class="btn-desk-qual px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-bold text-[10px]" title="Ghi kèm cả Số định lượng + (Âm tính / Dương tính)">± Số + Âm/Dương</button>
+              <button type="button" tabindex="-1" data-qrow="${idx}" data-qmode="neg" class="btn-desk-qual px-1.5 py-0.5 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-[10px]" title="Điền Âm tính & chuyển dòng kế">Âm tính</button>
+              <button type="button" tabindex="-1" data-qrow="${idx}" data-qmode="pos" class="btn-desk-qual px-1.5 py-0.5 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-[10px]" title="Điền Dương tính & chuyển dòng kế">Dương tính</button>
+              <button type="button" tabindex="-1" data-qrow="${idx}" data-qmode="both" class="btn-desk-qual px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-bold text-[10px]" title="Ghi kèm cả Số định lượng + (Âm tính / Dương tính)">± Số + Âm/Dương</button>
             </div>
             ` : ''}
           </td>
@@ -4065,20 +4232,23 @@
             <span id="evalBadge_${idx}" class="${evalRes.colorClass}">${evalRes.label}</span>
           </td>
           <td class="py-2 px-2 text-center">
-            <input type="text" data-row-idx="${idx}" data-field="refText" value="${row.refText}" class="entry-cell-input w-full text-center text-slate-700 font-semibold bg-transparent border-b border-transparent focus:border-teal-500 focus:outline-none text-xs" />
+            <input type="text" tabindex="-1" data-row-idx="${idx}" data-field="refText" value="${escapeHtml(row.refText)}" class="entry-cell-input w-full text-center text-slate-700 font-semibold bg-transparent border-b border-transparent focus:border-teal-500 focus:outline-none text-xs" />
           </td>
           <td class="py-2 px-1.5 text-center">
-            <input type="text" data-row-idx="${idx}" data-field="unit" value="${row.unit}" class="entry-cell-input w-full text-center text-slate-600 bg-transparent border-b border-transparent focus:border-teal-500 focus:outline-none text-xs" />
+            <input type="text" tabindex="-1" data-row-idx="${idx}" data-field="unit" value="${escapeHtml(row.unit)}" class="entry-cell-input w-full text-center text-slate-600 bg-transparent border-b border-transparent focus:border-teal-500 focus:outline-none text-xs" />
           </td>
           <td class="py-2 px-2.5">
-            <input type="text" id="entryNoteInput_${idx}" data-row-idx="${idx}" data-field="note" value="${row.note || ''}" placeholder="Ghi chú..." class="entry-cell-input w-full rounded border px-2.5 py-1 font-semibold ${row.note ? 'text-rose-700 border-rose-200 bg-rose-50/40' : 'text-slate-700 border-slate-200 bg-slate-50/60'}" />
+            <input type="text" tabindex="-1" id="entryNoteInput_${idx}" data-row-idx="${idx}" data-field="note" value="${escapeHtml(row.note || '')}" placeholder="Ghi chú..." class="entry-cell-input w-full rounded border px-2.5 py-1 font-semibold ${row.note ? 'text-rose-700 border-rose-200 bg-rose-50/40' : 'text-slate-700 border-slate-200 bg-slate-50/60'}" />
           </td>
           <td class="py-2 px-2 text-right">
-            ${isInPkg ? `<div class="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5 inline-block mb-0.5" title="Đã nằm trong gói — không cộng dồn tiền">Trong gói (0đ)</div>` : ''}
-            <input type="number" step="1000" data-row-idx="${idx}" data-field="price" value="${row.price || 0}" class="entry-price-input w-20 text-right font-bold ${isInPkg ? 'text-slate-400 line-through' : 'text-teal-800'} bg-slate-50 rounded border border-slate-200 px-1.5 py-1 text-xs" title="${isInPkg ? 'Chỉ số này đã nằm trong gói nên không cộng dồn vào tổng tiền' : 'Đơn giá xét nghiệm lẻ ngoài gói'}" />
+            ${isInPkg
+              ? `<div class="text-[11px] font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-lg px-2 py-1 inline-block" title="Chỉ số này đã có trong gói đang chọn nên tính 0đ (tuyệt đối không cộng thêm tiền lẻ)">Trong gói: 0 đ</div>
+                 <div class="text-[10px] text-slate-400 line-through mt-0.5">Lẻ: ${formatMoney(row.price || 0)}</div>`
+              : `<input type="number" tabindex="-1" step="1000" data-row-idx="${idx}" data-field="price" value="${row.price || 0}" class="entry-price-input w-20 text-right font-bold text-teal-800 bg-slate-50 rounded border border-slate-200 px-1.5 py-1 text-xs" title="Đơn giá xét nghiệm lẻ ngoài gói" />`
+            }
           </td>
           <td class="py-2 px-1.5 text-center">
-            <button type="button" data-remove-idx="${idx}" class="btn-remove-row p-1 text-slate-400 hover:text-rose-600">✕</button>
+            <button type="button" tabindex="-1" data-remove-idx="${idx}" class="btn-remove-row p-1 text-slate-400 hover:text-rose-600">✕</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -4106,6 +4276,11 @@
         const ev = evaluateTestResult(r, g);
         r.note = ev.autoNote || '';
         renderEntryResultTable();
+        if (i + 1 < state.entryRows.length) {
+          focusEntryResultRowInput(i + 1);
+        } else {
+          focusEntryResultRowInput(i);
+        }
       }
 
       tbody.querySelectorAll('.btn-desk-qual').forEach(btn => {
@@ -4135,6 +4310,38 @@
             noteInp.value = state.entryRows[i].note;
             noteInp.className = `entry-cell-input w-full rounded border px-2.5 py-1 font-semibold ${state.entryRows[i].note ? 'text-rose-700 border-rose-200 bg-rose-50/40' : 'text-slate-700 border-slate-200 bg-slate-50/60'}`;
           }
+          const mobValInp = document.querySelector(`.mob-val-input[data-mob-idx="${i}"]`);
+          if (mobValInp) mobValInp.value = state.entryRows[i].value;
+          const mobBadge = document.getElementById(`mobEvalBadge_${i}`);
+          if (mobBadge) {
+            mobBadge.className = `py-2 px-2 rounded-xl border border-slate-200 bg-slate-50 text-xs ${ev.colorClass}`;
+            mobBadge.textContent = ev.label;
+          }
+          const mobNote = document.getElementById(`mobNoteInput_${i}`);
+          if (mobNote) mobNote.value = state.entryRows[i].note;
+        });
+
+        inp.addEventListener('keydown', e => {
+          const i = parseInt(e.target.getAttribute('data-row-idx'), 10);
+          if (e.key === 'Enter' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (i + 1 < state.entryRows.length) {
+              focusEntryResultRowInput(i + 1);
+            } else {
+              document.getElementById('btnSaveRecord')?.focus();
+            }
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (i - 1 >= 0) {
+              focusEntryResultRowInput(i - 1);
+            }
+          } else if (e.key === 'Tab') {
+            const nextIdx = e.shiftKey ? (i - 1) : (i + 1);
+            if (nextIdx >= 0 && nextIdx < state.entryRows.length) {
+              e.preventDefault();
+              focusEntryResultRowInput(nextIdx);
+            }
+          }
         });
       });
 
@@ -4143,6 +4350,10 @@
           const i = parseInt(e.target.getAttribute('data-row-idx'), 10);
           const field = e.target.getAttribute('data-field');
           state.entryRows[i][field] = e.target.value;
+          if (field === 'note') {
+            const mobNote = document.getElementById(`mobNoteInput_${i}`);
+            if (mobNote) mobNote.value = e.target.value;
+          }
         });
       });
 
@@ -4243,6 +4454,27 @@
             const dVal = document.getElementById(`deskValInput_${i}`);
             if (dVal) dVal.value = state.entryRows[i].value;
           });
+
+          inp.addEventListener('keydown', e => {
+            const i = parseInt(e.target.getAttribute('data-mob-idx'), 10);
+            if (e.key === 'Enter' || e.key === 'ArrowDown') {
+              e.preventDefault();
+              if (i + 1 < state.entryRows.length) {
+                focusEntryResultRowInput(i + 1);
+              }
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              if (i - 1 >= 0) {
+                focusEntryResultRowInput(i - 1);
+              }
+            } else if (e.key === 'Tab') {
+              const nextIdx = e.shiftKey ? (i - 1) : (i + 1);
+              if (nextIdx >= 0 && nextIdx < state.entryRows.length) {
+                e.preventDefault();
+                focusEntryResultRowInput(nextIdx);
+              }
+            }
+          });
         });
 
         mobileContainer.querySelectorAll('.btn-mob-qual').forEach(btn => {
@@ -4271,6 +4503,23 @@
             recalculateEntryBilling();
           });
         });
+      }
+
+      if (savedFocus) {
+        let restoreEl = null;
+        if (savedFocus.id) restoreEl = document.getElementById(savedFocus.id);
+        if (!restoreEl && savedFocus.rowIdx !== null && savedFocus.field) {
+          restoreEl = tbody.querySelector(`[data-row-idx="${savedFocus.rowIdx}"][data-field="${savedFocus.field}"]`);
+        }
+        if (!restoreEl && savedFocus.mobIdx !== null) {
+          restoreEl = mobileContainer?.querySelector(`.mob-val-input[data-mob-idx="${savedFocus.mobIdx}"]`);
+        }
+        if (restoreEl) {
+          restoreEl.focus();
+          if (typeof savedFocus.selStart === 'number') {
+            try { restoreEl.setSelectionRange(savedFocus.selStart, savedFocus.selEnd ?? savedFocus.selStart); } catch (_) {}
+          }
+        }
       }
     }
 
@@ -4312,6 +4561,7 @@
         discountAmount,
         finalAmount,
         paymentMethod: document.getElementById('inpPaymentMethod').value,
+        appliedPackageIds: [...state.entrySelectedPkgIds],
         appliedPackageNames: state.entrySelectedPackageNames.join(' + ') || 'Xét nghiệm lẻ',
         results: JSON.parse(JSON.stringify(state.entryRows))
       };
@@ -4363,12 +4613,27 @@
       document.getElementById('inpDiagnosis').value = rec.diagnosis || '';
       if (document.getElementById('inpGeneralNote')) document.getElementById('inpGeneralNote').value = rec.generalNote || '';
 
+      if (document.getElementById('inpDiscountPercent')) document.getElementById('inpDiscountPercent').value = 0;
+      if (document.getElementById('inpVatPercent')) document.getElementById('inpVatPercent').value = 0;
       document.getElementById('inpDiscountAmount').value = rec.discountAmount || 0;
       document.getElementById('inpFinalAmount').value = rec.finalAmount || 0;
       document.getElementById('lblSubtotalAmount').textContent = formatMoney((rec.finalAmount || 0) + (rec.discountAmount || 0));
       document.getElementById('inpPaymentMethod').value = rec.paymentMethod || 'Chuyển khoản QR';
-      state.entrySelectedPkgIds = [];
-      state.entrySelectedPackageNames = rec.appliedPackageNames ? [rec.appliedPackageNames] : [];
+      const rawPkgNames = String(rec.appliedPackageNames || '').split('+').map(x => x.trim()).filter(Boolean);
+      if (Array.isArray(rec.appliedPackageIds) && rec.appliedPackageIds.length > 0) {
+        state.entrySelectedPkgIds = rec.appliedPackageIds.filter(pid => state.packages.some(p => p.id === pid));
+      } else {
+        state.entrySelectedPkgIds = state.packages
+          .filter(p => rawPkgNames.some(n => {
+            const nl = n.toLowerCase();
+            const pl = p.name.toLowerCase();
+            return nl === pl || (nl.includes('tổng quát') && pl.includes('tổng quát')) || (nl.includes('tế bào máu') && pl.includes('cbc'));
+          }))
+          .map(p => p.id);
+      }
+      state.entrySelectedPackageNames = state.entrySelectedPkgIds.length > 0
+        ? state.entrySelectedPkgIds.map(pid => state.packages.find(p => p.id === pid)?.name).filter(Boolean)
+        : (rec.appliedPackageNames && rec.appliedPackageNames !== 'Xét nghiệm lẻ' ? [rec.appliedPackageNames] : []);
       document.getElementById('lblAppliedPackages').textContent = rec.appliedPackageNames || '';
 
       state.entryRows = JSON.parse(JSON.stringify(rec.results || []));
@@ -4463,13 +4728,26 @@
             const idx = state.orderSheetSelectedPkgIds.indexOf(pkg.id);
             if (idx >= 0) {
               state.orderSheetSelectedPkgIds.splice(idx, 1);
-              pkg.testIds.forEach(tid => {
-                state.orderSheetSelectedTestIds = state.orderSheetSelectedTestIds.filter(x => x !== tid);
+              const stillCovered = new Set();
+              state.orderSheetSelectedPkgIds.forEach(otherId => {
+                const otherPkg = state.packages.find(p => p.id === otherId);
+                if (otherPkg && Array.isArray(otherPkg.testIds)) {
+                  otherPkg.testIds.forEach(t => stillCovered.add(canonicalTestId(t)));
+                }
+              });
+              (pkg.testIds || []).forEach(tid => {
+                const cid = canonicalTestId(tid);
+                if (!stillCovered.has(cid)) {
+                  state.orderSheetSelectedTestIds = state.orderSheetSelectedTestIds.filter(x => canonicalTestId(x) !== cid);
+                }
               });
             } else {
               state.orderSheetSelectedPkgIds.push(pkg.id);
-              pkg.testIds.forEach(tid => {
-                if (!state.orderSheetSelectedTestIds.includes(tid)) state.orderSheetSelectedTestIds.push(tid);
+              (pkg.testIds || []).forEach(tid => {
+                const cid = canonicalTestId(tid);
+                if (!state.orderSheetSelectedTestIds.some(x => canonicalTestId(x) === cid)) {
+                  state.orderSheetSelectedTestIds.push(cid);
+                }
               });
             }
             renderOrderSheetTab();
@@ -4486,8 +4764,15 @@
           grid.style.rowGap = '2px';
           grid.style.paddingTop = '2.5px';
 
+          const orderCoveredByPkg = new Set();
+          state.orderSheetSelectedPkgIds.forEach(pid => {
+            const p = state.packages.find(x => x.id === pid);
+            if (p && Array.isArray(p.testIds)) p.testIds.forEach(tid => orderCoveredByPkg.add(canonicalTestId(tid)));
+          });
           grouped[cat].forEach(t => {
-            const isSel = state.orderSheetSelectedTestIds.includes(t.id);
+            const cid = canonicalTestId(t.id);
+            const isInPkg = orderCoveredByPkg.has(cid);
+            const isSel = isInPkg || state.orderSheetSelectedTestIds.some(x => canonicalTestId(x) === cid);
             const itemEl = document.createElement('div');
             itemEl.className = `flex items-center gap-1 cursor-pointer rounded ${isSel ? 'bg-teal-50 font-bold text-teal-950' : 'text-slate-800'}`;
             itemEl.style.padding = `${itemPadY}px 4px`;
@@ -4498,8 +4783,12 @@
               <span class="truncate">${t.name}</span>
             `;
             itemEl.addEventListener('click', () => {
+              if (isInPkg) {
+                showToast(`"${t.name}" đã nằm trong gói đang chọn (0đ phụ thu, không cộng dồn tiền)!`);
+                return;
+              }
               if (isSel) {
-                state.orderSheetSelectedTestIds = state.orderSheetSelectedTestIds.filter(x => x !== t.id);
+                state.orderSheetSelectedTestIds = state.orderSheetSelectedTestIds.filter(x => canonicalTestId(x) !== cid);
               } else {
                 state.orderSheetSelectedTestIds.push(t.id);
               }
@@ -4925,6 +5214,9 @@
         weightInfoEl.textContent = `${modeLabel} • Cỡ chữ KQ: ${valFontPt}pt`;
       }
 
+      if (tplStyle === 'custom' && !state.labConfig.customReportTemplateHtml) {
+        showToast('Chưa có Mẫu 4 tùy chỉnh. Vui lòng tải lên file .HTML ở mục Cài đặt hệ thống!', 'info');
+      }
       // Handle Custom Uploaded HTML Template if selected
       if (tplStyle === 'custom' && state.labConfig.customReportTemplateHtml) {
         ensureTailwindRuntime();
@@ -5179,6 +5471,9 @@
             if (!Array.isArray(state.cloudConfig.deletedRecordIds)) state.cloudConfig.deletedRecordIds = [];
             if (!state.cloudConfig.deletedRecordIds.includes(id)) state.cloudConfig.deletedRecordIds.push(id);
             state.records = state.records.filter(r => r.id !== id);
+            if (state.currentPrintRecordId === id) state.currentPrintRecordId = state.records[0]?.id || '';
+            if (state.currentBarcodeRecordId === id) state.currentBarcodeRecordId = state.records[0]?.id || '';
+            if (state.editingRecordId === id) initNewOrderForm();
             saveState();
             populateRecordSelectors();
             renderRecordsTab();
@@ -5207,7 +5502,7 @@
       const testMap = {};
       visits.forEach((v, vIdx) => {
         (v.results || []).forEach(res => {
-          const key = res.testId || res.name;
+          const key = canonicalTestId(res.testId || res.id || res.name);
           if (!testMap[key]) {
             testMap[key] = { name: res.name, unit: res.unit || '', refText: res.refText || '', valuesByVisit: {} };
           }
@@ -5280,7 +5575,7 @@
       const testMap = {};
       visits.forEach((v, vIdx) => {
         (v.results || []).forEach(res => {
-          const key = res.testId || res.name;
+          const key = canonicalTestId(res.testId || res.id || res.name);
           if (!testMap[key]) testMap[key] = { name: res.name, unit: res.unit || '', refText: res.refText || '', valuesByVisit: {} };
           testMap[key].valuesByVisit[vIdx] = res.value;
         });
@@ -5366,11 +5661,13 @@
             object: 'Dịch vụ',
             address: item.address || state.labConfig.address,
             doctor: '',
+            updatedAt: Date.now(),
             specimen: 'Máu & Huyết thanh',
-            sampleTime: item.sampleTime || '2026-10-01T08:00',
             resultTime: item.resultTime || item.ngay || '2026-10-01T09:00',
             diagnosis: '',
             status: 'completed',
+            subtotalAmount: parseInt(String(item.finalAmount || item.thanh_tien || item.price || 0).replace(/\D/g, ''), 10) || 0,
+            discountAmount: 0,
             finalAmount: parseInt(String(item.finalAmount || item.thanh_tien || item.price || 0).replace(/\D/g, ''), 10) || 0,
             paymentMethod: 'Đã thu',
             appliedPackageNames: item.appliedPackageNames || item.goi_xn || 'Hồ sơ phần mềm cũ',
@@ -5474,12 +5771,34 @@
         // Thermal Receipt Mode (K80 / K58) with Itemized Bill & MB Bank VietQR
         container.className = 'flex justify-center';
         const isK58 = labelSize === 'k58';
-        let itemsRows = (rec.results || []).map((r, i) => `
-          <tr>
-            <td style="padding:2px 0;">${i + 1}. ${r.name}</td>
-            <td style="padding:2px 0;text-align:right;font-weight:bold;white-space:nowrap;">${formatMoney(r.price || 0)}</td>
+        const rawPkgNames = String(rec.appliedPackageNames || '').split('+').map(x => x.trim()).filter(Boolean);
+        const matchedPkgs = (Array.isArray(rec.appliedPackageIds) && rec.appliedPackageIds.length > 0)
+          ? state.packages.filter(p => rec.appliedPackageIds.includes(p.id))
+          : state.packages.filter(p => rawPkgNames.some(n => {
+              const nl = n.toLowerCase();
+              const pl = p.name.toLowerCase();
+              return nl === pl || (nl.includes('tổng quát') && pl.includes('tổng quát')) || (nl.includes('tế bào máu') && pl.includes('cbc'));
+            }));
+        const coveredSet = new Set();
+        matchedPkgs.forEach(p => (p.testIds || []).forEach(tid => {
+          coveredSet.add(tid);
+          coveredSet.add(canonicalTestId(tid));
+        }));
+        const pkgHeaderRows = matchedPkgs.map(p => `
+          <tr style="border-bottom:1px dashed #cbd5e1;">
+            <td style="padding:2px 0;font-weight:900;">★ ${escapeHtml(p.name)}</td>
+            <td style="padding:2px 0;text-align:right;font-weight:900;white-space:nowrap;">${formatMoney(p.price || 0)}</td>
           </tr>
         `).join('');
+        let itemsRows = pkgHeaderRows + (rec.results || []).map((r, i) => {
+          const isInPkg = coveredSet.has(canonicalTestId(r.testId || r.id));
+          return `
+          <tr>
+            <td style="padding:2px 0;">${i + 1}. ${escapeHtml(r.name)}</td>
+            <td style="padding:2px 0;text-align:right;font-weight:bold;white-space:nowrap;">${isInPkg ? 'Trong gói (0 đ)' : formatMoney(r.price || 0)}</td>
+          </tr>
+        `;
+        }).join('');
 
         container.innerHTML = `
           <div class="thermal-receipt-paper" style="width:${isK58 ? '56mm' : '78mm'};">
@@ -5589,13 +5908,14 @@
       const patientIncome = state.records.reduce((s, r) => s + (r.paymentMethod !== 'Chưa thu' ? (Number(r.finalAmount) || 0) : 0), 0);
       const qrIncome = state.records.reduce((s, r) => s + (r.paymentMethod === 'Chuyển khoản QR' ? (Number(r.finalAmount) || 0) : 0), 0);
       const cashIncome = state.records.reduce((s, r) => s + (r.paymentMethod === 'Tiền mặt' ? (Number(r.finalAmount) || 0) : 0), 0);
+      const otherMethodIncome = Math.max(0, patientIncome - qrIncome - cashIncome);
       const otherIncome = state.financeLedger.filter(x => x.type === 'income_other').reduce((s, x) => s + (Number(x.amount) || 0), 0);
       const totalIncome = patientIncome + otherIncome;
 
       const reagentExpense = state.financeLedger.filter(x => x.type === 'expense_reagent').reduce((s, x) => s + (Number(x.amount) || 0), 0);
       const supplyExpense = state.financeLedger.filter(x => x.type !== 'expense_reagent' && x.type !== 'income_other').reduce((s, x) => s + (Number(x.amount) || 0), 0);
       const totalExpense = reagentExpense + supplyExpense;
-      return { patientIncome, qrIncome, cashIncome, otherIncome, totalIncome, reagentExpense, supplyExpense, totalExpense, netProfit: totalIncome - totalExpense };
+      return { patientIncome, qrIncome, cashIncome, otherMethodIncome, otherIncome, totalIncome, reagentExpense, supplyExpense, totalExpense, netProfit: totalIncome - totalExpense };
     }
 
     function getCombinedFinanceRows() {
@@ -5736,6 +6056,11 @@
             <td style="border:1px solid #000000;padding:6px;text-align:right;">${formatMoney(t.cashIncome)}</td>
             <td style="border:1px solid #000000;padding:6px;">Thu trực tiếp</td>
           </tr>
+          ${t.otherMethodIncome > 0 ? `<tr>
+            <td style="border:1px solid #000000;padding:6px;">&nbsp;&nbsp;• Thu khác / Đã thu (chưa phân loại)</td>
+            <td style="border:1px solid #000000;padding:6px;text-align:right;">${formatMoney(t.otherMethodIncome)}</td>
+            <td style="border:1px solid #000000;padding:6px;">Hồ sơ đã thanh toán</td>
+          </tr>` : ''}
           <tr>
             <td style="border:1px solid #000000;padding:6px;font-weight:bold;">2. Chi Nhập Hóa Chất Xét Nghiệm</td>
             <td style="border:1px solid #000000;padding:6px;text-align:right;font-weight:bold;color:#be123c;">-${formatMoney(t.reagentExpense)}</td>
@@ -5776,6 +6101,15 @@
     // 12. TAB 7: SYSTEM SETTINGS
     // =========================================================================
     function renderCatalogTab() {
+      const setCfgVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+      setCfgVal('cfgLabName', state.labConfig.name);
+      setCfgVal('cfgLabAddress', state.labConfig.address);
+      setCfgVal('cfgLabPhone', state.labConfig.phone);
+      setCfgVal('cfgLabOwner', state.labConfig.owner);
+      setCfgVal('cfgBankBin', state.labConfig.bankBin || '970422');
+      setCfgVal('cfgBankAccount', state.labConfig.bankAccount);
+      setCfgVal('cfgBankOwner', state.labConfig.bankOwner);
+
       const pkgTbody = document.getElementById('packagesAdminTableBody');
       pkgTbody.innerHTML = '';
       state.packages.forEach(pkg => {
@@ -5807,6 +6141,7 @@
           if (!state.cloudConfig.deletedPackageIds.includes(id)) state.cloudConfig.deletedPackageIds.push(id);
           state.packages = state.packages.filter(p => p.id !== id);
           state.entrySelectedPkgIds = state.entrySelectedPkgIds.filter(pid => pid !== id);
+          state.orderSheetSelectedPkgIds = state.orderSheetSelectedPkgIds.filter(pid => pid !== id);
           state.entrySelectedPackageNames = state.entrySelectedPkgIds.map(pid => state.packages.find(p => p.id === pid)?.name).filter(Boolean);
           saveState();
           recalculateEntryBilling();
@@ -6084,13 +6419,13 @@
 
     // Clinical Knowledge Base for Immediate Built-in Medical AI Interpretation
     function generateClinicalInterpretationForItem(item, ev, gender) {
-      const id = String(item.testId || '').toLowerCase();
+      const id = canonicalTestId(item.testId || item.id);
       const name = item.name;
       const val = item.value;
       const unit = item.unit || '';
-      const flag = ev.flag; // 'H', 'L', 'POS', 'N'
+      const flag = ev.flag; // 'H', 'L', 'POS', 'NORM', 'EMPTY'
 
-      if (flag === 'N') return null;
+      if (flag === 'NORM' || flag === 'EMPTY') return null;
 
       const clinicalMap = {
         glucose: {
@@ -6488,9 +6823,15 @@
       initNewOrderForm();
       startCloudRealtimePolling();
 
-      // Check if full-screen login gate is enabled
+      // Check if full-screen login gate is enabled & restore admin unlock if session is admin
       try {
         const hasSession = sessionStorage.getItem(STORAGE_KEYS.AUTH_SESSION) || localStorage.getItem(STORAGE_KEYS.AUTH_SESSION);
+        if (hasSession) {
+          const matchedAcc = state.accounts.find(a => a && String(a.username || '').toLowerCase() === String(hasSession).toLowerCase());
+          if (matchedAcc && matchedAcc.role === 'admin') {
+            state.isAdminUnlocked = true;
+          }
+        }
         if (state.cloudConfig.requireLoginOnStart && !hasSession) {
           document.getElementById('appAuthGateModal').classList.remove('hidden');
         }
@@ -6510,7 +6851,6 @@
       document.getElementById('btnBackToStep2').addEventListener('click', () => switchEntryStep(2));
 
       document.getElementById('inpStep2SearchSingleTest').addEventListener('input', renderStep2SelectionScreen);
-      document.getElementById('inpStep3FilterSingleTest').addEventListener('input', populateSingleTestDropdown);
 
       function authenticateUserAccount(rawUser, rawPass) {
         const cleanUser = String(rawUser || '').trim().toLowerCase();
@@ -6538,6 +6878,10 @@
 
 
       // Entry Form Events
+      document.getElementById('btnResetNewOrder')?.addEventListener('click', () => {
+        initNewOrderForm();
+        showToast('Đã làm mới form để tạo phiếu xét nghiệm mới!');
+      });
       document.getElementById('btnGenNewCode').addEventListener('click', () => {
         document.getElementById('inpPatientCode').value = generateNextPatientCode();
         updateEntryPaymentQRDisplay();
@@ -6546,6 +6890,27 @@
       attachTitleCaseOnSpace(document.getElementById('inpAddress'));
       attachTitleCaseOnSpace(document.getElementById('orderSheetPatientName'));
       document.getElementById('inpBirthYear').addEventListener('input', updateCalculatedAge);
+
+      // Continuous Enter navigation across Step 1 fields
+      const step1Order = ['inpPatientName', 'inpBirthYear', 'inpGender', 'inpPhone', 'inpAddress', 'inpDoctor', 'inpDiagnosis'];
+      step1Order.forEach((fid, idx) => {
+        const el = document.getElementById(fid);
+        if (!el) return;
+        el.addEventListener('keydown', e => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            if (idx + 1 < step1Order.length) {
+              const nextEl = document.getElementById(step1Order[idx + 1]);
+              if (nextEl) {
+                nextEl.focus();
+                try { if (nextEl.select) nextEl.select(); } catch (_) {}
+              }
+            } else {
+              switchEntryStep(2);
+            }
+          }
+        });
+      });
       document.getElementById('inpGender').addEventListener('change', renderEntryResultTable);
 
       document.getElementById('btnSaveQuickPackage').addEventListener('click', () => {
@@ -6755,14 +7120,17 @@
       });
       document.getElementById('chkShowEntryPaymentQR').addEventListener('change', () => updateEntryPaymentQRDisplay());
       document.getElementById('btnRecalcPriceFromRows').addEventListener('click', () => {
-        state.entrySelectedPkgIds = [];
-        state.entrySelectedPackageNames = [];
         recalculateEntryBilling();
+        renderEntryResultTable();
+        showToast(state.entrySelectedPkgIds.length > 0
+          ? 'Đã tính lại theo giá Gói + XN lẻ ngoài gói (các XN trong gói tính 0đ)!'
+          : 'Đã cộng lại tổng tiền theo đơn giá lẻ!');
       });
 
       document.getElementById('btnSelectAllTests').addEventListener('click', () => {
         state.entryRows = state.catalog.map(t => ({
-          testId: t.id, category: t.category, name: t.name, value: t.normalSample || '',
+          testId: t.id, category: t.category, name: t.name, value: '',
+          normalSample: t.normalSample || '',
           refText: t.refText, minM: t.minM, maxM: t.maxM, minF: t.minF, maxF: t.maxF,
           unit: t.unit, price: t.price || 0, note: ''
         }));
@@ -6787,16 +7155,18 @@
       document.getElementById('btnAddCustomRow').addEventListener('click', () => {
         state.entryRows.push({
           testId: 'custom_' + Date.now(), category: 'XÉT NGHIỆM KHÁC', name: 'Chỉ số mới',
-          value: 'Âm tính', refText: 'Âm tính', minM: null, maxM: null, minF: null, maxF: null,
+          value: '', refText: 'Âm tính', minM: null, maxM: null, minF: null, maxF: null,
           unit: '', price: 50000, note: ''
         });
         renderEntryResultTable();
         recalculateEntryBilling();
+        focusEntryResultRowInput(state.entryRows.length - 1);
       });
 
       document.getElementById('btnFillNormalValues').addEventListener('click', () => {
         state.entryRows.forEach(r => {
-          const catItem = state.catalog.find(c => c.id === r.testId);
+          const cid = canonicalTestId(r.testId);
+          const catItem = state.catalog.find(c => canonicalTestId(c.id) === cid);
           if (catItem && catItem.normalSample) r.value = catItem.normalSample;
           r.note = '';
         });
@@ -6805,16 +7175,20 @@
 
       document.getElementById('btnSaveRecord').addEventListener('click', () => saveCurrentOrder('none'));
 
-      // Quick General Note on Print Toolbar & Step 3
+      // Quick General Note on Print Toolbar & Step 3 (debounced cloud sync)
+      let quickNoteCloudTimer = null;
       document.getElementById('inpPrintQuickGeneralNote')?.addEventListener('input', e => {
         const rec = state.records.find(r => r.id === state.currentPrintRecordId) || state.records[0];
         if (!rec) return;
         rec.generalNote = e.target.value;
+        rec.updatedAt = Date.now();
         if (state.editingRecordId === rec.id && document.getElementById('inpGeneralNote')) {
           document.getElementById('inpGeneralNote').value = rec.generalNote;
         }
-        saveState();
+        saveState(true);
         renderPrintableReport();
+        clearTimeout(quickNoteCloudTimer);
+        quickNoteCloudTimer = setTimeout(() => saveState(false), 1000);
       });
 
       // Zalo PDF & Image Copy Buttons
@@ -6905,10 +7279,6 @@
         showToast('Đã Copy câu lệnh & bảng kết quả xét nghiệm! Bạn có thể dán (Ctrl+V) vào Gemini Web!');
       });
 
-      document.getElementById('btnInjectPromptIntoWebview')?.addEventListener('click', () => {
-        openGeminiWebWithCompiledPrompt();
-      });
-
       document.getElementById('btnPasteGeminiWebResponse')?.addEventListener('click', async () => {
         const rec = getActiveGeminiRecord();
         if (!rec) return;
@@ -6918,14 +7288,37 @@
             clipText = await navigator.clipboard.readText();
           } catch (e) {}
         }
-        if (!clipText) {
-          clipText = window.prompt('Dán (Ctrl+V) nội dung phản hồi từ Gemini Web vào đây để chuẩn hóa thành văn bản Word:');
-        }
         if (clipText && clipText.trim()) {
           const formattedHtml = formatMarkdownFromGeminiToHtml(clipText);
           document.getElementById('geminiStandardWordSheet').innerHTML = buildStandardMedicalWordHtml(rec, formattedHtml);
           showToast('Đã đưa kết quả phân tích của Gemini vào mẫu File Word chuẩn!');
+        } else {
+          document.getElementById('geminiWebConnectionPanel')?.classList.remove('hidden');
+          const pasteBox = document.getElementById('geminiInlinePasteBox');
+          if (pasteBox) {
+            pasteBox.classList.remove('hidden');
+            document.getElementById('txtGeminiPasteInput')?.focus();
+          }
+          showToast('Hãy dán (Ctrl+V) nội dung từ Gemini Web vào ô bên dưới!', 'info');
         }
+      });
+
+      document.getElementById('btnCancelGeminiPaste')?.addEventListener('click', () => {
+        document.getElementById('geminiInlinePasteBox')?.classList.add('hidden');
+      });
+
+      document.getElementById('btnApplyGeminiPaste')?.addEventListener('click', () => {
+        const rec = getActiveGeminiRecord();
+        const txt = (document.getElementById('txtGeminiPasteInput')?.value || '').trim();
+        if (!rec || !txt) {
+          showToast('Vui lòng dán nội dung từ Gemini Web trước!', 'error');
+          return;
+        }
+        const formattedHtml = formatMarkdownFromGeminiToHtml(txt);
+        document.getElementById('geminiStandardWordSheet').innerHTML = buildStandardMedicalWordHtml(rec, formattedHtml);
+        document.getElementById('txtGeminiPasteInput').value = '';
+        document.getElementById('geminiInlinePasteBox')?.classList.add('hidden');
+        showToast('Đã đưa kết quả phân tích của Gemini vào mẫu File Word chuẩn!');
       });
 
       document.getElementById('btnSaveGeminiApiKey')?.addEventListener('click', () => {
@@ -6989,10 +7382,17 @@
         if (pPhone) document.getElementById('inpPhone').value = pPhone;
         if (pDoc) document.getElementById('inpDoctor').value = pDoc;
 
+        const gender = document.getElementById('inpGender').value;
+        const selectedCanonSet = new Set(state.orderSheetSelectedTestIds.map(canonicalTestId));
+        state.orderSheetSelectedPkgIds.forEach(pid => {
+          const pkg = state.packages.find(p => p.id === pid);
+          if (pkg && Array.isArray(pkg.testIds)) pkg.testIds.forEach(tid => selectedCanonSet.add(canonicalTestId(tid)));
+        });
         state.entryRows = state.catalog
-          .filter(t => state.orderSheetSelectedTestIds.includes(t.id))
+          .filter(t => selectedCanonSet.has(canonicalTestId(t.id)))
           .map(t => ({
-            testId: t.id, category: t.category, name: t.name, value: t.normalSample || '',
+            testId: t.id, category: t.category, name: t.name, value: '',
+            normalSample: t.normalSample || '',
             refText: t.refText, minM: t.minM, maxM: t.maxM, minF: t.minF, maxF: t.maxF,
             unit: t.unit, price: t.price || 0, note: ''
           }));
@@ -7003,6 +7403,9 @@
           .filter(Boolean);
 
         recalculateEntryBilling();
+        renderStep2SelectionScreen();
+        populateSingleTestDropdown();
+        renderEntryResultTable();
         switchTab('tab-entry');
         switchEntryStep(3);
       });
@@ -7148,7 +7551,7 @@
             const parsed = JSON.parse(ev.target.result);
             if (parsed.records) state.records = parsed.records;
             if (parsed.catalog) state.catalog = parsed.catalog;
-            if (parsed.packages) state.packages = parsed.packages;
+            if (parsed.packages) state.packages = normalizePackagesList(parsed.packages);
             if (parsed.financeLedger) state.financeLedger = parsed.financeLedger;
             if (parsed.labConfig) state.labConfig = parsed.labConfig;
             saveState();
@@ -7181,7 +7584,6 @@
         state.currentBarcodeRecordId = e.target.value;
         renderBarcodeTab();
       });
-      document.getElementById('selLabelSize').addEventListener('change', renderBarcodeTab);
       document.getElementById('inpCopiesPerTube').addEventListener('input', renderBarcodeTab);
       document.querySelectorAll('.chk-tube-type').forEach(chk => chk.addEventListener('change', renderBarcodeTab));
       function applyThermalAndLabelPageSize() {
@@ -7270,7 +7672,10 @@
         const price = parseInt(document.getElementById('pkgInpPrice').value, 10) || 0;
         const desc = document.getElementById('pkgInpDesc').value.trim();
         const checkedIds = Array.from(document.querySelectorAll('.chk-pkg-test:checked')).map(c => c.value);
-        if (!name || checkedIds.length === 0) return;
+        if (!name || checkedIds.length === 0) {
+          showToast('Vui lòng nhập Tên gói và tích chọn ít nhất 1 chỉ số!', 'error');
+          return;
+        }
 
         if (editId) {
           const idx = state.packages.findIndex(p => p.id === editId);
@@ -7283,20 +7688,28 @@
         renderOrderSheetTab();
         renderCatalogTab();
         document.getElementById('boxCreatePackage').classList.add('hidden');
+        showToast(`Đã lưu gói xét nghiệm: ${name}!`);
       });
 
       document.getElementById('btnAddSubAccount').addEventListener('click', () => {
         const u = document.getElementById('subAccUsername').value.trim();
         const p = document.getElementById('subAccPassword').value.trim();
         const fn = document.getElementById('subAccFullName').value.trim() || u;
-        if (!u || !p) return;
-        if (state.accounts.some(a => a.username.toLowerCase() === u.toLowerCase())) return;
+        if (!u || !p) {
+          showToast('Vui lòng nhập Tên đăng nhập và Mật khẩu tài khoản con!', 'error');
+          return;
+        }
+        if (state.accounts.some(a => a.username.toLowerCase() === u.toLowerCase())) {
+          showToast('Tên đăng nhập này đã tồn tại!', 'error');
+          return;
+        }
         state.accounts.push({ username: u, password: p, fullName: fn, role: 'staff' });
         document.getElementById('subAccUsername').value = '';
         document.getElementById('subAccPassword').value = '';
         document.getElementById('subAccFullName').value = '';
         saveState();
         renderCatalogTab();
+        showToast(`Đã thêm tài khoản nhân viên: ${fn} (${u})!`);
       });
 
       document.getElementById('btnSaveLabConfig').addEventListener('click', () => {
@@ -7307,6 +7720,10 @@
         state.labConfig.bankBin = document.getElementById('cfgBankBin').value;
         state.labConfig.bankAccount = document.getElementById('cfgBankAccount').value.trim() || '0372111445';
         state.labConfig.bankOwner = document.getElementById('cfgBankOwner').value.trim() || 'Võ Bá Duy';
+        const hdrOwner = document.getElementById('headerLabOwner');
+        const hdrPhone = document.getElementById('headerLabPhone');
+        if (hdrOwner) hdrOwner.textContent = state.labConfig.owner;
+        if (hdrPhone) hdrPhone.textContent = state.labConfig.phone;
         saveState();
         updateEntryPaymentQRDisplay();
         showToast('Đã lưu cấu hình!');
@@ -7317,7 +7734,10 @@
       document.getElementById('btnConfirmAddCatalog').addEventListener('click', () => {
         const cat = document.getElementById('newTestCategory').value.trim() || 'VII. DẤU ẤN UNG THƯ';
         const name = document.getElementById('newTestName').value.trim();
-        if (!name) return;
+        if (!name) {
+          showToast('Vui lòng nhập Tên xét nghiệm mới!', 'error');
+          return;
+        }
         const price = parseInt(document.getElementById('newTestPrice').value, 10) || 50000;
         const unit = document.getElementById('newTestUnit').value.trim();
         const minVal = parseFloat(document.getElementById('newTestMin').value);
@@ -7339,6 +7759,10 @@
         populateSingleTestDropdown();
         renderStep2SelectionScreen();
         renderOrderSheetTab();
+        ['newTestCategory', 'newTestName', 'newTestPrice', 'newTestUnit', 'newTestMin', 'newTestMax', 'newTestRefText', 'newTestAutoNoteHigh'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
         renderCatalogTab();
         document.getElementById('boxAddCatalogTest').classList.add('hidden');
         showToast(`Đã thêm "${name}" và tự động cập nhật vào Phiếu Yêu Cầu!`);
@@ -7351,7 +7775,7 @@
         state.records = mergeRecordsSmart(state.records, [], state.cloudConfig.deletedRecordIds || []);
         const removed = before - state.records.length;
         saveState(true);
-        refreshAllViewsAfterSync();
+        refreshAllViewsAfterSync(silent);
         await pushStateToCloud(false, true);
         showToast(removed > 0 ? `🧹 Đã dọn ${removed} hồ sơ trùng lặp và đồng bộ Cloud (Còn ${state.records.length} hồ sơ)!` : `✅ Không có hồ sơ trùng lặp (Tổng: ${state.records.length} hồ sơ)!`);
       });
@@ -7362,7 +7786,7 @@
       document.getElementById('btnMergeApp2SeedRecords')?.addEventListener('click', async () => {
         state.records = mergeRecordsSmart(state.records, APP2_SEED_REPORTS, state.cloudConfig.deletedRecordIds || []);
         saveState(true);
-        refreshAllViewsAfterSync();
+        refreshAllViewsAfterSync(silent);
         await pushStateToCloud(false);
         showToast(`📥 Đã gộp toàn bộ 209 hồ sơ từ Phần mềm 2 và đồng bộ lên Cloud (Tổng: ${state.records.length} hồ sơ)!`);
       });
@@ -7433,10 +7857,14 @@
         state.isAdminUnlocked = (found.role === 'admin');
         document.getElementById('appAuthGateModal').classList.add('hidden');
         showToast(`Xin chào ${found.fullName}! Đang đồng bộ dữ liệu...`);
-        if (state.pendingTabAfterLogin && state.isAdminUnlocked) {
+        if (state.pendingTabAfterLogin) {
           const target = state.pendingTabAfterLogin;
           state.pendingTabAfterLogin = null;
-          switchTab(target);
+          if (state.isAdminUnlocked) {
+            switchTab(target);
+          } else {
+            showToast('Tài khoản nhân viên không có quyền truy cập Cài đặt / Cloud (yêu cầu quyền Admin).', 'info');
+          }
         }
         if (state.cloudConfig.dbUrl) pullStateFromCloud(true);
       });
@@ -7502,12 +7930,23 @@
         state.cloudConfig.requireLoginOnStart = document.getElementById('chkRequireLoginOnStart').checked;
         saveState(true);
 
-        // Ensure modals are hidden before serializing HTML so downloaded index.html has a clean initial DOM state
+        const prevTab = state.activeTab;
+        const prevStep = state.activeEntryStep;
+        if (prevTab !== 'tab-entry') switchTab('tab-entry');
+        if (prevStep !== 1) switchEntryStep(1);
+
         const gateModal = document.getElementById('appAuthGateModal');
         const wasGateVisible = gateModal && !gateModal.classList.contains('hidden');
         if (gateModal) gateModal.classList.add('hidden');
+        const toastEl = document.getElementById('toastContainer');
+        if (toastEl) toastEl.innerHTML = '';
+
         let fullHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
         if (wasGateVisible && gateModal) gateModal.classList.remove('hidden');
+        if (prevTab !== 'tab-entry') switchTab(prevTab);
+        if (prevStep !== 1) switchEntryStep(prevStep);
+
         fullHtml = fullHtml.replace(
           /cloudConfig:\s*\{[\s\S]*?\},/,
           `cloudConfig: ${JSON.stringify(state.cloudConfig, null, 8)},`
@@ -7539,34 +7978,34 @@
           'echo   BO CAI DAT UNG DUNG (APP) PHONG XET NGHIEM Y KHOA BA DUY TREN PC',
           'echo =====================================================================',
           'echo.',
-          'set "APP_DIR=%LOCALAPPDATA%\PXN_Ba_Duy_App"',
+          'set "APP_DIR=%LOCALAPPDATA%\\PXN_Ba_Duy_App"',
           'if not exist "%APP_DIR%" mkdir "%APP_DIR%"',
           'if not exist "%~dp0index.html" (',
           '  echo [LOI] Vui long tai file "index.html" (Nut so 1) va de cung thu muc voi file nay!',
           '  pause',
           '  exit /b',
           ')',
-          'copy /Y "%~dp0index.html" "%APP_DIR%\index.html" >nul',
-          'set "LAUNCHER=%APP_DIR%\Chay_Phan_Mem_PXN_Ba_Duy.bat"',
+          'copy /Y "%~dp0index.html" "%APP_DIR%\\index.html" >nul',
+          'set "LAUNCHER=%APP_DIR%\\Chay_Phan_Mem_PXN_Ba_Duy.bat"',
           '(',
           '  echo @echo off',
-          '  echo if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" (',
-          '  echo   start "" "%ProgramFiles%\Google\Chrome\Application\chrome.exe" --start-maximized "file:///%APP_DIR%/index.html"',
+          '  echo if exist "%ProgramFiles%\\Google\\Chrome\\Application\\chrome.exe" (',
+          '  echo   start "" "%ProgramFiles%\\Google\\Chrome\\Application\\chrome.exe" --start-maximized "file:///%APP_DIR%/index.html"',
           '  echo   exit',
           '  echo ^)',
-          '  echo if exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" (',
-          '  echo   start "" "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" --start-maximized "file:///%APP_DIR%/index.html"',
+          '  echo if exist "%ProgramFiles(x86)%\\Google\\Chrome\\Application\\chrome.exe" (',
+          '  echo   start "" "%ProgramFiles(x86)%\\Google\\Chrome\\Application\\chrome.exe" --start-maximized "file:///%APP_DIR%/index.html"',
           '  echo   exit',
           '  echo ^)',
-          '  echo if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" (',
-          '  echo   start "" "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" --start-maximized "file:///%APP_DIR%/index.html"',
+          '  echo if exist "%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe" (',
+          '  echo   start "" "%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe" --start-maximized "file:///%APP_DIR%/index.html"',
           '  echo   exit',
           '  echo ^)',
-          '  echo if exist "%ProgramFiles%\Microsoft\Edge\Application\msedge.exe" (',
-          '  echo   start "" "%ProgramFiles%\Microsoft\Edge\Application\msedge.exe" --start-maximized "file:///%APP_DIR%/index.html"',
+          '  echo if exist "%ProgramFiles%\\Microsoft\\Edge\\Application\\msedge.exe" (',
+          '  echo   start "" "%ProgramFiles%\\Microsoft\\Edge\\Application\\msedge.exe" --start-maximized "file:///%APP_DIR%/index.html"',
           '  echo   exit',
           '  echo ^)',
-          '  echo start "" "%APP_DIR%\index.html"',
+          '  echo start "" "%APP_DIR%\\index.html"',
           ') > "%LAUNCHER%"',
           'powershell -NoProfile -Command "$s=(New-Object -COM WScript.Shell).CreateShortcut([Environment]::GetFolderPath(\'Desktop\') + \'\\Phòng Xét Nghiệm Bá Duy.lnk\'); $s.TargetPath=\'%LAUNCHER%\'; $s.WorkingDirectory=\'%APP_DIR%\'; $s.IconLocation=\'shell32.dll,23\'; $s.Save()"',
           'echo [THANH CONG] Da cai dat xong App "Phong Xet Nghiem Ba Duy" ra man hinh Desktop!',
@@ -7737,13 +8176,28 @@
   <div class="sheet-stage">${wrapperHtml}</div>
   <script>
     window.addEventListener('load', function() {
-      setTimeout(function() {
-        window.print();
-      }, 300);
+      var isElectronWin = /electron/i.test(navigator.userAgent || '');
+      if (!isElectronWin) {
+        setTimeout(function() {
+          window.print();
+        }, 300);
+      }
     });
   <` + `/script>
 </body>
 </html>`;
+      }
+
+      function isRunningInDesktopExe() {
+        const ua = String(navigator.userAgent || '').toLowerCase();
+        return Boolean(
+          ua.includes('electron') ||
+          (window.process && window.process.versions && window.process.versions.electron) ||
+          window.electronAPI ||
+          window.labflowDesktop ||
+          window.baDuyDesktopApp ||
+          typeof window.require === 'function'
+        );
       }
 
       async function triggerHtmlPrint() {
@@ -7753,15 +8207,85 @@
         const rCode = (rec && rec.code) ? String(rec.code).replace(/[^a-zA-Z0-9_-]/g, '_') : 'XN000001';
         const fileName = 'Phieu-In-' + rCode + '.html';
 
-        // 1. If running inside the .exe Desktop App (Electron), NEVER call Electron's native window.print()
-        // (which shows Windows "This app doesn't support print preview"). Always open in web browser (Chrome / Cốc Cốc / Edge / Internet)!
+        // 1. Desktop .exe Preload / IPC Bridges (Electron preload, WebView2, custom wrappers)
         if (window.electronAPI) {
-          const fn = window.electronAPI.openPrintHtml || window.electronAPI.openPrintPreviewWindow || window.electronAPI.openBrowserPrint;
+          const fn = window.electronAPI.openPrintHtml || window.electronAPI.openPrintPreviewWindow || window.electronAPI.openBrowserPrint || window.electronAPI.printInBrowser || window.electronAPI.printHtml;
           if (typeof fn === 'function') {
-            showToast('🖨️ Đang mở trang in trên trình duyệt web...');
-            await fn({ htmlContent: standaloneHtml, fileName: fileName });
-            return;
+            try {
+              showToast('🖨️ Đang mở trang in trên trình duyệt web...');
+              await fn({ htmlContent: standaloneHtml, fileName: fileName, title: document.title || fileName, isThermal: ctx.isThermal, format: ctx.format });
+              return;
+            } catch (_) {}
           }
+        }
+        if (window.labflowDesktop && typeof window.labflowDesktop.openBrowserPrint === 'function') {
+          try {
+            showToast('🖨️ Đang mở trang in trên trình duyệt web...');
+            await window.labflowDesktop.openBrowserPrint(standaloneHtml, document.title || fileName, ctx.isThermal, ctx.format);
+            return;
+          } catch (_) {}
+        }
+        if (window.baDuyDesktopApp && typeof window.baDuyDesktopApp.openBrowserPrint === 'function') {
+          try {
+            showToast('🖨️ Đang mở trang in trên trình duyệt web...');
+            await window.baDuyDesktopApp.openBrowserPrint(standaloneHtml, document.title || fileName, ctx.isThermal, ctx.format);
+            return;
+          } catch (_) {}
+        }
+
+        // 2. Direct Node.js / Electron in .exe App: write temp HTML & launch system web browser (Chrome / Cốc Cốc / Edge)
+        if (typeof window.require === 'function') {
+          try {
+            const fs = window.require('fs');
+            const os = window.require('os');
+            const path = window.require('path');
+            const tmpPath = path.join(os.tmpdir(), fileName);
+            fs.writeFileSync(tmpPath, standaloneHtml, 'utf8');
+
+            try {
+              const electron = window.require('electron');
+              if (electron && electron.ipcRenderer && typeof electron.ipcRenderer.invoke === 'function') {
+                try {
+                  const ipcRes = await electron.ipcRenderer.invoke('open-print-html', { htmlContent: standaloneHtml, fileName: fileName });
+                  if (ipcRes !== false) {
+                    showToast('🖨️ Đang mở trang in trên trình duyệt web...');
+                    return;
+                  }
+                } catch (_) {}
+              }
+              if (electron && electron.shell && typeof electron.shell.openPath === 'function') {
+                showToast('🖨️ Đang mở trang in trên trình duyệt web...');
+                const errMsg = await electron.shell.openPath(tmpPath);
+                if (!errMsg) return;
+              }
+            } catch (_) {}
+
+            try {
+              const cp = window.require('child_process');
+              if (cp && typeof cp.exec === 'function') {
+                showToast('🖨️ Đang mở trang in trên trình duyệt web...');
+                const winBrowsers = [
+                  process.env.ProgramFiles && path.join(process.env.ProgramFiles, 'Google\\Chrome\\Application\\chrome.exe'),
+                  process.env['ProgramFiles(x86)'] && path.join(process.env['ProgramFiles(x86)'], 'Google\\Chrome\\Application\\chrome.exe'),
+                  process.env.LOCALAPPDATA && path.join(process.env.LOCALAPPDATA, 'Google\\Chrome\\Application\\chrome.exe'),
+                  process.env.LOCALAPPDATA && path.join(process.env.LOCALAPPDATA, 'CocCoc\\Browser\\Application\\browser.exe'),
+                  process.env['ProgramFiles(x86)'] && path.join(process.env['ProgramFiles(x86)'], 'Microsoft\\Edge\\Application\\msedge.exe'),
+                  process.env.ProgramFiles && path.join(process.env.ProgramFiles, 'Microsoft\\Edge\\Application\\msedge.exe')
+                ].filter(Boolean);
+                const foundBrowser = winBrowsers.find(bPath => { try { return fs.existsSync(bPath); } catch (_) { return false; } });
+                if (foundBrowser) {
+                  cp.exec(`"${foundBrowser}" "${tmpPath}"`);
+                } else {
+                  cp.exec(`cmd /c start "" "${tmpPath}"`);
+                }
+                return;
+              }
+            } catch (_) {}
+          } catch (_) {}
+        }
+
+        // 3. If running inside .exe (Electron) without Node/Preload bridge: NEVER call nativeWindowPrint() or internal Electron popup
+        if (isRunningInDesktopExe()) {
           const blob = new Blob([standaloneHtml], { type: 'text/html;charset=utf-8' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
@@ -7770,41 +8294,12 @@
           document.body.appendChild(a);
           a.click();
           a.remove();
-          setTimeout(() => URL.revokeObjectURL(url), 5000);
-          showToast('Đã tải file in HTML (' + fileName + '). Hãy mở file để in trên trình duyệt!');
+          setTimeout(() => URL.revokeObjectURL(url), 10000);
+          showToast('🖨️ Đã xuất bản in HTML (' + fileName + ') để mở trên trình duyệt web (tránh lỗi Print Preview của .exe)!');
           return;
         }
 
-        // 2. Support other desktop bridges if present
-        if (window.labflowDesktop && typeof window.labflowDesktop.openBrowserPrint === 'function') {
-          showToast('🖨️ Đang mở trang in trên trình duyệt web...');
-          await window.labflowDesktop.openBrowserPrint(standaloneHtml, document.title || fileName, ctx.isThermal, ctx.format);
-          return;
-        }
-        if (window.baDuyDesktopApp && typeof window.baDuyDesktopApp.openBrowserPrint === 'function') {
-          showToast('🖨️ Đang mở trang in trên trình duyệt web...');
-          await window.baDuyDesktopApp.openBrowserPrint(standaloneHtml, document.title || fileName, ctx.isThermal, ctx.format);
-          return;
-        }
-
-        // 3. Direct Node.js / Electron renderer fallback if nodeIntegration is enabled
-        if (typeof window.require === 'function') {
-          try {
-            const fs = window.require('fs');
-            const os = window.require('os');
-            const path = window.require('path');
-            const tmpPath = path.join(os.tmpdir(), fileName);
-            fs.writeFileSync(tmpPath, standaloneHtml, 'utf8');
-            const electron = window.require('electron');
-            if (electron && electron.shell && typeof electron.shell.openPath === 'function') {
-              showToast('🖨️ Đang mở trang in trên trình duyệt web...');
-              await electron.shell.openPath(tmpPath);
-              return;
-            }
-          } catch (_) {}
-        }
-
-        // 4. In standard Web Browser or PWA: open standalone HTML print page in a new browser tab
+        // 4. In standard Web Browser (Chrome / Edge / Cốc Cốc / Safari): open standalone HTML print page in a new browser tab
         try {
           const win = window.open('', '_blank');
           if (win && win.document) {
@@ -7821,6 +8316,15 @@
       window.print = function() {
         return triggerHtmlPrint();
       };
+
+      // Intercept Ctrl+P / Cmd+P so pressing Ctrl+P inside the .exe app also opens the web browser instead of Electron native print
+      window.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && String(e.key || '').toLowerCase() === 'p') {
+          e.preventDefault();
+          e.stopPropagation();
+          triggerHtmlPrint();
+        }
+      }, true);
 
     });
   </script>
