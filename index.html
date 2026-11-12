@@ -849,17 +849,7 @@
           <button id="btnSidebarSyncNow" type="button" style="width:100%;padding:6.5px 10px;border-radius:8px;background:rgba(13,138,123,0.32);color:#5eead4;font-weight:700;font-size:11.5px;border:1px solid rgba(94,234,212,0.35);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;" title="Gộp dữ liệu 2 chiều giữa Điện thoại và Máy tính ngay lập tức">
             <span>🔄 Đồng bộ 2 chiều ngay</span>
           </button>
-          <button id="btnQuickNewOrder" type="button" style="width:100%;padding:7px 10px;border-radius:8px;background:#0d8a7b;color:#ffffff;font-weight:700;font-size:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;">
-            <span>➕ Tạo phiếu xét nghiệm mới</span>
-          </button>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
-            <button id="btnQuickOrderSheet" type="button" style="padding:6px 8px;border-radius:7px;background:rgba(255,255,255,0.12);color:#ffffff;font-weight:700;font-size:11.2px;border:1px solid rgba(255,255,255,0.18);cursor:pointer;">
-              ☑️ Phiếu YC
-            </button>
-            <button id="btnQuickPrintPreview" type="button" style="padding:6px 8px;border-radius:7px;background:rgba(255,255,255,0.12);color:#ffffff;font-weight:700;font-size:11.2px;border:1px solid rgba(255,255,255,0.18);cursor:pointer;">
-              🖨️ Phiếu KQ
-            </button>
-          </div>
+
           <button id="btnHeaderLockApp" type="button" style="width:100%;padding:6px 10px;border-radius:7px;background:rgba(255,255,255,0.1);color:#ffffff;font-weight:600;font-size:11.5px;border:1px solid rgba(255,255,255,0.2);cursor:pointer;" title="Khóa màn hình bảo mật khi truy cập từ xa">
             🚪 Khóa / Đăng xuất tài khoản
           </button>
@@ -914,7 +904,7 @@
               </div>
               <div class="sm:col-span-2">
                 <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Họ và tên bệnh nhân *</label>
-                <input id="inpPatientName" type="text" class="w-full rounded-xl border-2 border-teal-600/40 px-4 py-2.5 text-lg font-extrabold text-slate-900 uppercase focus:outline-none focus:border-teal-600" placeholder="NHẬP HỌ VÀ TÊN BỆNH NHÂN..." />
+                <input id="inpPatientName" type="text" class="w-full rounded-xl border-2 border-teal-600/40 px-4 py-2.5 text-lg font-extrabold text-slate-900 focus:outline-none focus:border-teal-600" placeholder="NHẬP HỌ VÀ TÊN BỆNH NHÂN..." />
               </div>
             </div>
 
@@ -1216,7 +1206,7 @@
       <section id="tab-order-sheet" class="tab-panel print-only-ordersheet">
         <div class="no-print bg-white rounded-2xl border border-slate-200 p-3.5 mb-4 flex flex-wrap items-center justify-between gap-3 shadow-xs">
           <div class="flex flex-wrap items-center gap-2 text-xs">
-            <input id="orderSheetPatientName" type="text" placeholder="Họ tên bệnh nhân..." class="rounded-lg border border-slate-300 px-2.5 py-1.5 font-bold uppercase w-44" />
+            <input id="orderSheetPatientName" type="text" placeholder="Họ tên bệnh nhân..." class="rounded-lg border border-slate-300 px-2.5 py-1.5 font-bold w-44" />
             <input id="orderSheetBirthYear" type="number" placeholder="Năm sinh" class="rounded-lg border border-slate-300 px-2.5 py-1.5 w-24" />
             <input id="orderSheetPhone" type="text" placeholder="Điện thoại" class="rounded-lg border border-slate-300 px-2.5 py-1.5 w-32" />
             <input id="orderSheetDoctor" type="text" placeholder="Bác sĩ chỉ định" class="rounded-lg border border-slate-300 px-2.5 py-1.5 w-36" value="" />
@@ -4029,6 +4019,32 @@
       switchEntryStep(1);
     }
 
+    function toVietnameseTitleCase(str) {
+      return String(str || '').replace(/(^|[\s,\-\/\.])(\S)/g, (m, sep, ch) => sep + ch.toLocaleUpperCase('vi-VN'));
+    }
+
+    function attachTitleCaseOnSpace(inputEl) {
+      if (!inputEl) return;
+      inputEl.addEventListener('input', e => {
+        const val = inputEl.value;
+        // Format when user presses space or finishes a word so Vietnamese IME diacritics are never interrupted mid-word
+        if (e.data === ' ' || /\s$/.test(val)) {
+          const pos = inputEl.selectionStart;
+          const formatted = toVietnameseTitleCase(val);
+          if (formatted !== val) {
+            inputEl.value = formatted;
+            if (pos !== null) {
+              try { inputEl.setSelectionRange(pos, pos); } catch (_) {}
+            }
+          }
+        }
+      });
+      inputEl.addEventListener('blur', () => {
+        const formatted = toVietnameseTitleCase(inputEl.value.trim());
+        if (formatted !== inputEl.value) inputEl.value = formatted;
+      });
+    }
+
     function updateCalculatedAge() {
       const by = parseInt(document.getElementById('inpBirthYear').value, 10);
       const currentYear = new Date().getFullYear();
@@ -4315,7 +4331,7 @@
 
     function saveCurrentOrder(nextAction = 'none') {
       const code = document.getElementById('inpPatientCode').value.trim() || generateNextPatientCode();
-      const patientName = document.getElementById('inpPatientName').value.trim().toUpperCase();
+      const patientName = toVietnameseTitleCase(document.getElementById('inpPatientName').value).trim();
       if (!patientName) {
         switchEntryStep(1);
         showToast('Vui lòng nhập Họ và tên bệnh nhân ở Bước 1!', 'error');
@@ -6601,19 +6617,16 @@
         switchTab('tab-entry');
       });
 
-      // Quick Header Buttons
-      document.getElementById('btnQuickNewOrder').addEventListener('click', () => {
-        initNewOrderForm();
-        switchTab('tab-entry');
-      });
-      document.getElementById('btnQuickOrderSheet').addEventListener('click', () => switchTab('tab-order-sheet'));
-      document.getElementById('btnQuickPrintPreview').addEventListener('click', () => switchTab('tab-print'));
+
 
       // Entry Form Events
       document.getElementById('btnGenNewCode').addEventListener('click', () => {
         document.getElementById('inpPatientCode').value = generateNextPatientCode();
         updateEntryPaymentQRDisplay();
       });
+      attachTitleCaseOnSpace(document.getElementById('inpPatientName'));
+      attachTitleCaseOnSpace(document.getElementById('inpAddress'));
+      attachTitleCaseOnSpace(document.getElementById('orderSheetPatientName'));
       document.getElementById('inpBirthYear').addEventListener('input', updateCalculatedAge);
       document.getElementById('inpGender').addEventListener('change', renderEntryResultTable);
 
@@ -7050,7 +7063,7 @@
         const pYear = document.getElementById('orderSheetBirthYear').value.trim();
         const pPhone = document.getElementById('orderSheetPhone').value.trim();
         const pDoc = document.getElementById('orderSheetDoctor').value.trim();
-        if (pName) document.getElementById('inpPatientName').value = pName.toUpperCase();
+        if (pName) document.getElementById('inpPatientName').value = toVietnameseTitleCase(pName);
         if (pYear) {
           document.getElementById('inpBirthYear').value = pYear;
           updateCalculatedAge();
@@ -7704,8 +7717,121 @@
         };
       }
 
-      window.print = function() {
-        detectActivePrintContext();
+      function getActivePrintSourceElement() {
+        const ctx = detectActivePrintContext();
+        if (ctx.mode === 'barcode') {
+          return document.getElementById('barcodeGridContainer');
+        }
+        if (ctx.mode === 'ordersheet') {
+          return document.getElementById('a4OrderSheet');
+        }
+        if (ctx.mode === 'formal') {
+          return document.getElementById('formalReportPrintContainer');
+        }
+        const customViewEl = document.getElementById('customUploadedReportView');
+        if (customViewEl && !customViewEl.classList.contains('hidden')) {
+          return customViewEl;
+        }
+        return document.getElementById('a4ReportSheet');
+      }
+
+      function cloneElementWithCanvasImages(sourceEl) {
+        if (!sourceEl) return null;
+        const clone = sourceEl.cloneNode(true);
+        const srcCanvases = sourceEl.querySelectorAll('canvas');
+        const dstCanvases = clone.querySelectorAll('canvas');
+        srcCanvases.forEach((srcCanvas, idx) => {
+          const dstCanvas = dstCanvases[idx];
+          if (!dstCanvas) return;
+          try {
+            if (srcCanvas.width > 0 && srcCanvas.height > 0) {
+              const img = document.createElement('img');
+              img.src = srcCanvas.toDataURL('image/png');
+              img.className = srcCanvas.className || '';
+              img.style.cssText = srcCanvas.style.cssText || '';
+              if (srcCanvas.style.width) img.style.width = srcCanvas.style.width;
+              if (srcCanvas.style.height) img.style.height = srcCanvas.style.height;
+              dstCanvas.replaceWith(img);
+            }
+          } catch (e) {}
+        });
+        return clone;
+      }
+
+      function buildStandaloneBrowserPrintHtml(ctx) {
+        const sourceEl = getActivePrintSourceElement();
+        const cloned = cloneElementWithCanvasImages(sourceEl);
+        if (cloned) cloned.classList.remove('hidden');
+
+        // Copy all styles except #dynamicPagePrintStyle so we put the single authoritative @page rule at the end
+        const allStyles = Array.from(document.querySelectorAll('style'))
+          .filter(s => s.id !== 'dynamicPagePrintStyle')
+          .map(s => s.outerHTML)
+          .join('\n');
+        const pageStyleText = document.getElementById('dynamicPagePrintStyle')?.textContent || '@page { size: A4 portrait; margin: 4mm; }';
+        const bodyClass = document.body.className;
+
+        let wrapperHtml = cloned ? cloned.outerHTML : '';
+        if (ctx.mode === 'barcode') {
+          wrapperHtml = `<section id="tab-barcode" class="tab-panel active"><div>${wrapperHtml}</div></section>`;
+        } else if (ctx.mode === 'ordersheet') {
+          wrapperHtml = `<section id="tab-order-sheet" class="tab-panel active">${wrapperHtml}</section>`;
+        } else if (ctx.mode === 'report') {
+          wrapperHtml = `<section id="tab-print" class="tab-panel active">${wrapperHtml}</section>`;
+        }
+
+        return `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${document.title || 'Phieu_Xet_Nghiem_Ba_Duy'}</title>
+  ${allStyles}
+  <style id="dynamicPagePrintStyle">${pageStyleText}</style>
+</head>
+<body class="${bodyClass}" style="background:#ffffff;margin:0;padding:0;">
+  <div class="no-print" style="position:sticky;top:0;z-index:999;background:#173a63;color:#fff;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;font-family:sans-serif;">
+    <div style="font-size:13px;font-weight:700;">🖨️ ${ctx.label} — ${ctx.isThermal ? 'Khổ Máy In Nhiệt' : 'Khổ Máy In Thường (A4/A5)'}</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="window.print()" style="background:#fff;color:#173a63;border:none;padding:5px 14px;border-radius:6px;font-weight:800;cursor:pointer;font-size:12px;">🖨️ In lại (Ctrl + P)</button>
+      <button onclick="window.close()" style="background:#102a49;color:#fff;border:none;padding:5px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px;">Đóng</button>
+    </div>
+  </div>
+  <div class="app-shell">
+    <main>
+      ${wrapperHtml}
+    </main>
+  </div>
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() { window.print(); }, 120);
+    });
+  <` + `/script>
+</body>
+</html>`;
+      }
+
+      window.print = async function() {
+        const ctx = detectActivePrintContext();
+        if (window.labflowDesktop && typeof window.labflowDesktop.openBrowserPrint === 'function') {
+          const standaloneHtml = buildStandaloneBrowserPrintHtml(ctx);
+          await window.labflowDesktop.openBrowserPrint(standaloneHtml, document.title || 'Phieu_XN', ctx.isThermal, ctx.format);
+          return;
+        }
+        // If opened as an installed PWA/App window where Windows hides print preview, open a clean browser tab with Print Preview
+        const isStandaloneApp = window.matchMedia && (window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: minimal-ui)').matches);
+        if (isStandaloneApp) {
+          try {
+            const standaloneHtml = buildStandaloneBrowserPrintHtml(ctx);
+            const blob = new Blob([standaloneHtml], { type: 'text/html;charset=utf-8' });
+            const blobUrl = URL.createObjectURL(blob);
+            const win = window.open(blobUrl, '_blank');
+            if (win) {
+              setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+              return;
+            }
+          } catch (e) {}
+        }
         nativeWindowPrint();
       };
 
